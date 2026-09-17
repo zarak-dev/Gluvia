@@ -52,16 +52,16 @@ export const TREND_PERIODS = {
 // ============================================================
 
 export const AI_LIMITS = {
-  DIET_MAX_TOKENS: 500,
-  CHAT_MAX_TOKENS: 300,
-  ANALYZE_MAX_TOKENS: 800,
+  DIET_MAX_TOKENS: 1500,
+  CHAT_MAX_TOKENS: 1000,
+  ANALYZE_MAX_TOKENS: 2000,
 } as const;
 
 // ============================================================
 // Gemini Model
 // ============================================================
 
-export const GEMINI_MODEL = "gemini-2.0-flash" as const;
+export const GEMINI_MODEL = "gemini-3.6-flash" as const;
 
 // ============================================================
 // Navigation
