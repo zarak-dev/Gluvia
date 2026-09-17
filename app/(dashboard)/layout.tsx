@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
+import { AIChatWidget } from "@/components/AIChatWidget";
 import type { UserProfile } from "@/types";
 
 export default async function DashboardLayout({
@@ -39,6 +40,10 @@ export default async function DashboardLayout({
           {children}
         </main>
       </div>
+
+      {/* Floating AI Glycemic Assistant */}
+      <AIChatWidget />
     </div>
   );
 }
+
