@@ -1,24 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
+import { createClient } from "@/lib/supabase/server";
 import { callGemini } from "@/lib/gemini";
 import { AI_LIMITS } from "@/lib/constants";
-import type { SugarReading } from "@/types";
-
-const readingSchema = z.object({
-  id: z.string(),
-  reading_date: z.string(),
-  sugar_mg_dl: z.number(),
-  meal_tag: z.enum(["fasting", "before_meal", "after_meal", "bedtime"]),
-  food_eaten: z.string().nullable().optional(),
-  notes: z.string().nullable().optional(),
-});
 
 const analyzeRequestSchema = z.object({
-  username: z.string().default("Patient"),
-  readings: z
-    .array(readingSchema)
-    .min(1, "At least one reading is required for clinical analysis"),
+  username: z.string().optional().default("Patient"),
 });
 
 const ANALYZE_SYSTEM_PROMPT = `You are a clinical diabetes analytics specialist preparing an objective, factual glycemic summary for review between a South Asian patient and their endocrinologist or physician.
@@ -44,7 +32,23 @@ RECOMMENDATIONS:
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const body: unknown = await request.json();
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        {
+          message:
+            "Unauthorized. Please sign in to generate clinical analysis.",
+        },
+        { status: 401 }
+      );
+    }
+
+    const body: unknown = await request.json().catch(() => ({}));
     const parseResult = analyzeRequestSchema.safeParse(body);
 
     if (!parseResult.success) {
@@ -57,10 +61,42 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const { username, readings } = parseResult.data;
+    const { username } = parseResult.data;
+
+    // Fetch verified readings directly from Supabase server-side (capped at 90)
+    const { data: readings, error: readingsError } = await supabase
+      .from("sugar_readings")
+      .select("id, reading_date, sugar_mg_dl, meal_tag, food_eaten, notes")
+      .eq("user_id", user.id)
+      .order("reading_date", { ascending: false })
+      .limit(90);
+
+    if (readingsError) {
+      console.error(
+        "Error fetching readings for analysis:",
+        readingsError.message
+      );
+      return NextResponse.json(
+        { message: "Failed to retrieve sugar readings for clinical analysis" },
+        { status: 500 }
+      );
+    }
+
+    if (!readings || readings.length === 0) {
+      return NextResponse.json(
+        {
+          message:
+            "At least one logged reading is required to generate a clinical analysis.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Sort chronologically for the AI summary
+    const chronologicalReadings = [...readings].reverse();
 
     // Build data summary for the model
-    const readingsSummary = readings
+    const readingsSummary = chronologicalReadings
       .map(
         (r) =>
           `- ${new Date(r.reading_date).toLocaleDateString("en-PK")}: ${r.sugar_mg_dl} mg/dL (${r.meal_tag})${
@@ -70,9 +106,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .join("\n");
 
     const userPrompt = `Patient Name/Identifier: ${username}
-Total Readings Logged: ${readings.length}
+Total Readings Evaluated: ${readings.length}
 
-Recorded Readings (Chronological/Recent):
+Recorded Readings (Chronological):
 ${readingsSummary}
 
 Please produce the structured 4-section clinical summary following the mandatory headers: OVERVIEW:, PATTERNS:, CONCERNS:, and RECOMMENDATIONS:.`;

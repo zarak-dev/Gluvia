@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Trash2, Plus, Calendar, AlertCircle, Loader2 } from "lucide-react";
@@ -38,9 +38,14 @@ export function RecentReadings({
   initialReadings,
 }: RecentReadingsProps): React.ReactElement {
   const router = useRouter();
+  const readings = useAppStore((state) => state.readings);
+  const setReadings = useAppStore((state) => state.setReadings);
   const removeReading = useAppStore((state) => state.removeReading);
 
-  const [readings, setReadings] = useState<SugarReading[]>(initialReadings);
+  useEffect(() => {
+    setReadings(initialReadings);
+  }, [initialReadings, setReadings]);
+
   const [readingToDelete, setReadingToDelete] = useState<SugarReading | null>(
     null
   );
@@ -50,8 +55,12 @@ export function RecentReadings({
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!readingToDelete) return;
 
+    const previousReadings = readings;
     setIsDeleting(true);
     setDeleteError(null);
+
+    // Optimistic removal from store
+    removeReading(readingToDelete.id);
 
     try {
       const supabase = createClient();
@@ -61,17 +70,19 @@ export function RecentReadings({
         .eq("id", readingToDelete.id);
 
       if (error) {
+        // Rollback state on error
+        setReadings(previousReadings);
         setDeleteError(error.message);
         toast.error("Failed to delete reading: " + error.message);
         return;
       }
 
-      setReadings((prev) => prev.filter((r) => r.id !== readingToDelete.id));
-      removeReading(readingToDelete.id);
       toast.success("Reading deleted successfully");
       setReadingToDelete(null);
       router.refresh();
     } catch (err: unknown) {
+      // Rollback state on exception
+      setReadings(previousReadings);
       const msg =
         err instanceof Error ? err.message : "Failed to delete reading";
       setDeleteError(msg);
@@ -113,8 +124,8 @@ export function RecentReadings({
         </Alert>
       )}
 
-      {/* Desktop & Tablet Table */}
-      <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
+      {/* Desktop & Tablet Table (horizontally scrollable on small screens) */}
+      <div className="rounded-lg border bg-card shadow-sm overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

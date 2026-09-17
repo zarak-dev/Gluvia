@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { TrendingUp } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/getUser";
 import { SugarTrendChart } from "@/components/charts/SugarTrendChart";
 import type { SugarReading } from "@/types";
 
@@ -13,15 +14,13 @@ export const metadata: Metadata = {
 };
 
 export default async function TrendsPage(): Promise<React.ReactElement> {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) {
     redirect("/login");
   }
+
+  const supabase = createClient();
 
   // Fetch readings up to 90 days (limit 150)
   const { data: rawReadings } = await supabase

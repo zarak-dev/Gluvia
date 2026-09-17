@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/getUser";
 import { average, calculateTrend, getSugarLevel } from "@/lib/utils";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { QuickAddDialog } from "@/components/dashboard/QuickAddDialog";
@@ -24,22 +25,20 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage(): Promise<React.ReactElement> {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) {
     redirect("/login");
   }
 
-  // Fetch user profile
+  const supabase = createClient();
+
+  // Fetch user profile (only required columns)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("id, username")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   const typedProfile = profile as UserProfile | null;
 
@@ -81,7 +80,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
     average7day !== null ? getSugarLevel(average7day) : undefined;
 
   // Server-side calculation: Trend direction (from chronological order)
-  const chronologicalValues = [...readings].reverse().map((r) => r.sugar_mg_dl);
+  const chronologicalValues = readings.map((r) => r.sugar_mg_dl).reverse();
   const trend = calculateTrend(chronologicalValues);
 
   return (

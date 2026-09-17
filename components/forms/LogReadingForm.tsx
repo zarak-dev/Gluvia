@@ -70,12 +70,14 @@ function getNowDatetimeLocal(): string {
 }
 
 export interface LogReadingFormProps {
+  userId?: string;
   compact?: boolean;
   onSuccess?: (reading: SugarReading) => void;
   onCancel?: () => void;
 }
 
 export function LogReadingForm({
+  userId,
   compact = false,
   onSuccess,
   onCancel,
@@ -117,18 +119,22 @@ export function LogReadingForm({
 
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+      let activeUserId = userId;
 
-      if (authError || !user) {
+      if (!activeUserId) {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        activeUserId = session?.user?.id;
+      }
+
+      if (!activeUserId) {
         setServerError("You must be signed in to log a reading.");
         return;
       }
 
       const newReadingPayload = {
-        user_id: user.id,
+        user_id: activeUserId,
         reading_date: new Date(values.reading_date).toISOString(),
         sugar_mg_dl: Math.round(values.sugar_mg_dl),
         meal_tag: values.meal_tag,

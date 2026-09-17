@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PlusCircle, Clock, Info } from "lucide-react";
 
+import { getUser } from "@/lib/supabase/getUser";
 import { LogReadingForm } from "@/components/forms/LogReadingForm";
 import {
   Card,
@@ -17,7 +18,9 @@ export const metadata: Metadata = {
     "Record a new blood glucose reading with meal tags and diet notes.",
 };
 
-export default function LogReadingPage(): React.ReactElement {
+export default async function LogReadingPage(): Promise<React.ReactElement> {
+  const user = await getUser();
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
@@ -53,7 +56,7 @@ export default function LogReadingPage(): React.ReactElement {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LogReadingForm />
+          <LogReadingForm userId={user?.id} />
         </CardContent>
       </Card>
     </div>

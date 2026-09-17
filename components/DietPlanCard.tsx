@@ -13,6 +13,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { DietPlan } from "@/types";
 
+import { parseAISections } from "@/lib/utils";
+
 export interface DietPlanCardProps {
   plan: DietPlan;
   className?: string;
@@ -25,72 +27,22 @@ interface ParsedMeal {
 }
 
 function parseDietSections(text: string): ParsedMeal[] {
-  const sections: ParsedMeal[] = [];
-  const normalized = text.replace(/\r\n/g, "\n");
+  const parsed = parseAISections<React.ComponentType<{ className?: string }>>(
+    text,
+    [
+      { key: "BREAKFAST:", title: "Breakfast", meta: Sunrise },
+      { key: "LUNCH:", title: "Lunch", meta: Sun },
+      { key: "DINNER:", title: "Dinner", meta: Moon },
+      { key: "SNACKS:", title: "Snacks & Refreshment", meta: Coffee },
+    ],
+    "Daily Meal Plan"
+  );
 
-  const markers: Array<{
-    key: string;
-    title: string;
-    icon: React.ComponentType<{ className?: string }>;
-  }> = [
-    { key: "BREAKFAST:", title: "Breakfast", icon: Sunrise },
-    { key: "LUNCH:", title: "Lunch", icon: Sun },
-    { key: "DINNER:", title: "Dinner", icon: Moon },
-    { key: "SNACKS:", title: "Snacks & Refreshment", icon: Coffee },
-  ];
-
-  const foundIndices: Array<{
-    index: number;
-    title: string;
-    icon: React.ComponentType<{ className?: string }>;
-    keyLength: number;
-  }> = [];
-
-  for (const marker of markers) {
-    const idx = normalized.toUpperCase().indexOf(marker.key);
-    if (idx !== -1) {
-      foundIndices.push({
-        index: idx,
-        title: marker.title,
-        icon: marker.icon,
-        keyLength: marker.key.length,
-      });
-    }
-  }
-
-  // Sort by appearance in text
-  foundIndices.sort((a, b) => a.index - b.index);
-
-  if (foundIndices.length === 0) {
-    // Defensive fallback: entire text in one card
-    return [
-      {
-        title: "Daily Meal Plan",
-        content: text.trim(),
-        icon: Sun,
-      },
-    ];
-  }
-
-  for (let i = 0; i < foundIndices.length; i++) {
-    const current = foundIndices[i];
-    const startIndex = current.index + current.keyLength;
-    const endIndex =
-      i + 1 < foundIndices.length
-        ? foundIndices[i + 1].index
-        : normalized.length;
-
-    const content = normalized.slice(startIndex, endIndex).trim();
-    if (content) {
-      sections.push({
-        title: current.title,
-        content,
-        icon: current.icon,
-      });
-    }
-  }
-
-  return sections;
+  return parsed.map((item) => ({
+    title: item.title,
+    content: item.content,
+    icon: item.meta ?? Sun,
+  }));
 }
 
 export function DietPlanCard({

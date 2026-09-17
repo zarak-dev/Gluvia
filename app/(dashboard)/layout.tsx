@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUser } from "@/lib/supabase/getUser";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
 import { AIChatWidget } from "@/components/AIChatWidget";
@@ -10,23 +11,39 @@ export default async function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>): Promise<React.ReactElement> {
-  const supabase = createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user) {
     redirect("/login");
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  const supabase = createClient();
 
-  const typedProfile: UserProfile | null = profile as UserProfile | null;
+  let { data: profile } = await supabase
+    .from("profiles")
+    .select("id, username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  // Recovery fallback (H-6): if trigger did not populate profile, insert safe fallback
+  if (!profile) {
+    const { data: recoveredProfile } = await supabase
+      .from("profiles")
+      .insert({ id: user.id, username: null })
+      .select("id, username")
+      .maybeSingle();
+    if (recoveredProfile) {
+      profile = recoveredProfile;
+    }
+  }
+
+  const typedProfile: UserProfile | null = profile
+    ? {
+        id: profile.id,
+        username: profile.username,
+        created_at: new Date().toISOString(),
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">

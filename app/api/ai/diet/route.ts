@@ -120,16 +120,15 @@ Follow the exact section headers (BREAKFAST:, LUNCH:, DINNER:, SNACKS:) and incl
       .single();
 
     if (insertError) {
-      // Fallback: if database insertion fails, return generated plan with temporary id
-      const fallbackPlan: DietPlan = {
-        id: "temp-" + Date.now(),
-        user_id: user.id,
-        calories: Math.round(calories),
-        sugar_level: sugarLevel,
-        plan_text: planText,
-        created_at: new Date().toISOString(),
-      };
-      return NextResponse.json({ plan: fallbackPlan });
+      console.error("Diet plan database insert failed:", insertError.message);
+      return NextResponse.json(
+        {
+          message:
+            "Diet plan was generated but could not be saved to your history. Please try again.",
+          planText,
+        },
+        { status: 503 }
+      );
     }
 
     return NextResponse.json({ plan: insertedPlan as DietPlan });

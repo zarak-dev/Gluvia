@@ -8,12 +8,13 @@ const PROTECTED_ROUTES = [
   "/diet",
   "/foods",
   "/report",
+  "/api/ai",
 ];
 
 const AUTH_ROUTES = ["/login", "/register"];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
-  let supabaseResponse = NextResponse.next({ request });
+  const supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,13 +31,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
             options: Record<string, unknown>;
           }[]
         ): void {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            supabaseResponse.cookies.set(name, value, options);
+          });
         },
       },
     }
@@ -48,12 +46,15 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   const { pathname } = request.nextUrl;
 
-  // Redirect unauthenticated users away from protected routes
+  // Protect sensitive pages and API routes
   const isProtected = PROTECTED_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
   if (isProtected && !user) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     return NextResponse.redirect(loginUrl);

@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { SUGAR_THRESHOLDS } from "@/lib/constants";
+import { SUGAR_THRESHOLDS, TREND_THRESHOLD_MG_DL } from "@/lib/constants";
 import type { SugarLevel, TrendDirection } from "@/types";
 
 /**
@@ -62,10 +62,8 @@ export function calculateTrend(values: number[]): TrendDirection {
   const firstAvg = average(firstHalf);
   const secondAvg = average(secondHalf);
 
-  const TREND_THRESHOLD = 5;
-
-  if (secondAvg - firstAvg > TREND_THRESHOLD) return "up";
-  if (firstAvg - secondAvg > TREND_THRESHOLD) return "down";
+  if (secondAvg - firstAvg > TREND_THRESHOLD_MG_DL) return "up";
+  if (firstAvg - secondAvg > TREND_THRESHOLD_MG_DL) return "down";
   return "stable";
 }
 
@@ -89,4 +87,70 @@ export function average(values: number[]): number {
   if (values.length === 0) return 0;
   const sum = values.reduce((acc, val) => acc + val, 0);
   return sum / values.length;
+}
+
+export interface AISectionMarker<T = unknown> {
+  key: string;
+  title: string;
+  meta?: T;
+}
+
+export interface ParsedAISection<T = unknown> {
+  title: string;
+  content: string;
+  meta?: T;
+}
+
+/**
+ * Robust, defensive parser for structured AI responses containing uppercase headers.
+ * Extracts sections delimited by given markers while preserving ordering and handling edge cases.
+ */
+export function parseAISections<T = unknown>(
+  text: string,
+  markers: Array<AISectionMarker<T>>,
+  fallbackTitle = "Summary"
+): Array<ParsedAISection<T>> {
+  const sections: Array<ParsedAISection<T>> = [];
+  const normalized = text.replace(/\r\n/g, "\n");
+
+  const found: Array<{
+    marker: AISectionMarker<T>;
+    index: number;
+  }> = [];
+
+  for (const m of markers) {
+    const idx = normalized.toUpperCase().indexOf(m.key.toUpperCase());
+    if (idx !== -1) {
+      found.push({ marker: m, index: idx });
+    }
+  }
+
+  found.sort((a, b) => a.index - b.index);
+
+  if (found.length === 0) {
+    return [
+      {
+        title: fallbackTitle,
+        content: text.trim(),
+      },
+    ];
+  }
+
+  for (let i = 0; i < found.length; i++) {
+    const cur = found[i];
+    const startIndex = cur.index + cur.marker.key.length;
+    const endIndex =
+      i + 1 < found.length ? found[i + 1].index : normalized.length;
+    const content = normalized.slice(startIndex, endIndex).trim();
+
+    if (content) {
+      sections.push({
+        title: cur.marker.title,
+        content,
+        meta: cur.marker.meta,
+      });
+    }
+  }
+
+  return sections;
 }

@@ -27,6 +27,7 @@ import {
   formatDate,
   getSugarLevel,
   getSugarBadgeClass,
+  parseAISections,
   cn,
 } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -60,49 +61,23 @@ interface ParsedClinicalSection {
 }
 
 function parseClinicalSummary(text: string): ParsedClinicalSection[] {
-  const sections: ParsedClinicalSection[] = [];
-  const normalized = text.replace(/\r\n/g, "\n");
-
-  const markers = [
-    { key: "OVERVIEW:", title: "Clinical Overview" },
-    { key: "PATTERNS:", title: "Glycemic Patterns & Variations" },
-    { key: "CONCERNS:", title: "Spikes & Hypoglycemia Concerns" },
-    { key: "RECOMMENDATIONS:", title: "Consultation Talking Points" },
-  ];
-
-  const found: Array<{ key: string; title: string; index: number }> = [];
-
-  for (const m of markers) {
-    const idx = normalized.toUpperCase().indexOf(m.key);
-    if (idx !== -1) {
-      found.push({ ...m, index: idx });
-    }
-  }
-
-  found.sort((a, b) => a.index - b.index);
-
-  if (found.length === 0) {
-    return [{ title: "Clinical Summary", content: text.trim() }];
-  }
-
-  for (let i = 0; i < found.length; i++) {
-    const cur = found[i];
-    const start = cur.index + cur.key.length;
-    const end = i + 1 < found.length ? found[i + 1].index : normalized.length;
-    const content = normalized.slice(start, end).trim();
-    if (content) {
-      sections.push({ title: cur.title, content });
-    }
-  }
-
-  return sections;
+  return parseAISections(
+    text,
+    [
+      { key: "OVERVIEW:", title: "Clinical Overview" },
+      { key: "PATTERNS:", title: "Glycemic Patterns & Variations" },
+      { key: "CONCERNS:", title: "Spikes & Hypoglycemia Concerns" },
+      { key: "RECOMMENDATIONS:", title: "Consultation Talking Points" },
+    ],
+    "Clinical Summary"
+  );
 }
 
 export function ReportView({
   initialReadings,
   username,
 }: ReportViewProps): React.ReactElement {
-  const [readings] = useState<SugarReading[]>(initialReadings);
+  const readings = initialReadings;
   const [analysisSummary, setAnalysisSummary] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
@@ -172,7 +147,6 @@ export function ReportView({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username,
-          readings,
         }),
       });
 
@@ -218,8 +192,9 @@ export function ReportView({
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
+      const safeUsername = username.replace(/[^a-zA-Z0-9_-]/g, "_");
       a.href = url;
-      a.download = `Gluvia_Doctor_Report_${username.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0, 10)}.pdf`;
+      a.download = `Gluvia_Doctor_Report_${safeUsername}_${new Date().toISOString().slice(0, 10)}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

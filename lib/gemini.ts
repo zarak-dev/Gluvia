@@ -5,9 +5,15 @@ import { GEMINI_MODEL } from "@/lib/constants";
 const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
+export interface ChatMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
 interface GeminiRequestParams {
-  systemPrompt: string;
-  userPrompt: string;
+  systemPrompt?: string;
+  userPrompt?: string;
+  messages?: ChatMessage[];
   maxTokens: number;
 }
 
@@ -46,6 +52,7 @@ function isGeminiApiResponse(data: unknown): data is GeminiApiResponse {
 export async function callGemini({
   systemPrompt,
   userPrompt,
+  messages,
   maxTokens,
 }: GeminiRequestParams): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -56,6 +63,14 @@ export async function callGemini({
     );
   }
 
+  const payloadMessages =
+    messages && messages.length > 0
+      ? messages
+      : [
+          { role: "system", content: systemPrompt ?? "" },
+          { role: "user", content: userPrompt ?? "" },
+        ];
+
   const response = await fetch(GEMINI_API_URL, {
     method: "POST",
     headers: {
@@ -64,19 +79,15 @@ export async function callGemini({
     },
     body: JSON.stringify({
       model: GEMINI_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
+      messages: payloadMessages,
       max_tokens: maxTokens,
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(
-      `Gemini API request failed (${response.status}): ${errorText}`
-    );
+    console.error("Gemini API error:", response.status, errorText);
+    throw new Error(`AI service temporarily unavailable (${response.status})`);
   }
 
   const data: unknown = await response.json();

@@ -41,11 +41,11 @@ export function AIChatWidget(): React.ReactElement {
     }
   }, [chatMessages, isSending, isOpen]);
 
-  // Focus input when opened
+  // Focus input when opened with unmount cleanup
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (!isOpen) return;
+    const timerId = setTimeout(() => inputRef.current?.focus(), 100);
+    return () => clearTimeout(timerId);
   }, [isOpen]);
 
   const handleSendMessage = async (e?: React.FormEvent): Promise<void> => {
@@ -57,7 +57,7 @@ export function AIChatWidget(): React.ReactElement {
     setInputMessage("");
 
     const userMessage: ChatMessage = {
-      id: "user-" + Date.now(),
+      id: crypto.randomUUID(),
       role: "user",
       content: text,
       timestamp: new Date().toISOString(),
@@ -99,7 +99,7 @@ export function AIChatWidget(): React.ReactElement {
 
       const resObj = data as { reply: string };
       const assistantMessage: ChatMessage = {
-        id: "assistant-" + Date.now(),
+        id: crypto.randomUUID(),
         role: "assistant",
         content: resObj.reply,
         timestamp: new Date().toISOString(),

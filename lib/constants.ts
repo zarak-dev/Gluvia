@@ -1,4 +1,11 @@
-import type { MealTag, SugarLevel } from "@/types";
+import type {
+  MealTag,
+  SugarLevel,
+  SugarState,
+  TimeOfDay,
+  PricePref,
+  TastePref,
+} from "@/types";
 
 // ============================================================
 // Sugar Thresholds (application categorization, NOT clinical diagnosis)
@@ -9,6 +16,9 @@ export const SUGAR_THRESHOLDS = {
   NORMAL_MAX: 139,
   ELEVATED_MAX: 180,
 } as const;
+
+/** Minimum mg/dL delta between period halves to classify a trend as rising or falling. */
+export const TREND_THRESHOLD_MG_DL = 5;
 
 // ============================================================
 // Form Validation Limits
@@ -82,4 +92,30 @@ export const MEAL_TAG_LABELS: Record<MealTag, string> = {
   before_meal: "Before Meal",
   after_meal: "After Meal",
   bedtime: "Bedtime",
+} as const;
+
+export const SUGAR_STATE_LABELS: Record<SugarState, string> = {
+  pre: "Prediabetes",
+  type1: "Type 1 Diabetes",
+  type2: "Type 2 Diabetes",
+  advanced: "Advanced / Complicated",
+} as const;
+
+export const TIME_LABELS: Record<TimeOfDay, string> = {
+  breakfast: "Breakfast",
+  lunch: "Lunch",
+  dinner: "Dinner",
+} as const;
+
+export const PRICE_LABELS: Record<PricePref, string> = {
+  budget: "Budget-Friendly",
+  moderate: "Moderate",
+  premium: "Premium / Organic",
+} as const;
+
+export const TASTE_LABELS: Record<TastePref, string> = {
+  sweet: "Mildly Sweet (Safe)",
+  savory: "Savory",
+  spicy: "Spicy / Desi",
+  mild: "Mild / Gentle",
 } as const;

@@ -24,11 +24,11 @@ CREATE TABLE public.profiles (
 CREATE TABLE public.sugar_readings (
   id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id      UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  reading_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  reading_date TIMESTAMPTZ NOT NULL DEFAULT now(),
   sugar_mg_dl  INTEGER NOT NULL CHECK (sugar_mg_dl BETWEEN 40 AND 600),
   meal_tag     TEXT NOT NULL CHECK (meal_tag IN ('fasting', 'before_meal', 'after_meal', 'bedtime')),
-  food_eaten   TEXT,
-  notes        TEXT,
+  food_eaten   TEXT CHECK (food_eaten IS NULL OR char_length(food_eaten) <= 500),
+  notes        TEXT CHECK (notes IS NULL OR char_length(notes) <= 1000),
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -84,6 +84,9 @@ ALTER TABLE public.food_combinations ENABLE ROW LEVEL SECURITY;
 -- Profiles: users can manage only their own profile
 CREATE POLICY "profiles_select_own" ON public.profiles
   FOR SELECT USING (id = (SELECT auth.uid()));
+
+CREATE POLICY "profiles_insert_own" ON public.profiles
+  FOR INSERT WITH CHECK (id = (SELECT auth.uid()));
 
 CREATE POLICY "profiles_update_own" ON public.profiles
   FOR UPDATE USING (id = (SELECT auth.uid()));
@@ -154,3 +157,21 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
+
+-- ============================================================
+-- LIVE DATABASE MIGRATION SCRIPT (For existing deployments)
+-- Execute these statements in Supabase SQL Editor if upgrading:
+-- ============================================================
+-- 1. Migrate reading_date to TIMESTAMPTZ (C-2)
+-- ALTER TABLE public.sugar_readings
+--   ALTER COLUMN reading_date TYPE TIMESTAMPTZ USING reading_date::TIMESTAMPTZ;
+--
+-- 2. Add text length check constraints (H-5)
+-- ALTER TABLE public.sugar_readings
+--   ADD CONSTRAINT chk_food_eaten_length CHECK (food_eaten IS NULL OR char_length(food_eaten) <= 500),
+--   ADD CONSTRAINT chk_notes_length      CHECK (notes IS NULL OR char_length(notes) <= 1000);
+--
+-- 3. Add profiles self-insert policy for recovery (H-6)
+-- CREATE POLICY "profiles_insert_own" ON public.profiles
+--   FOR INSERT WITH CHECK (id = (SELECT auth.uid()));
+

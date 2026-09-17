@@ -20,6 +20,12 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  SUGAR_STATE_LABELS,
+  TIME_LABELS,
+  PRICE_LABELS,
+  TASTE_LABELS,
+} from "@/lib/constants";
 import type {
   FoodCombination,
   SugarState,
@@ -27,32 +33,6 @@ import type {
   PricePref,
   TastePref,
 } from "@/types";
-
-const SUGAR_STATE_LABELS: Record<SugarState, string> = {
-  pre: "Prediabetes",
-  type1: "Type 1 Diabetes",
-  type2: "Type 2 Diabetes",
-  advanced: "Advanced / Complicated",
-};
-
-const TIME_LABELS: Record<TimeOfDay, string> = {
-  breakfast: "Breakfast",
-  lunch: "Lunch",
-  dinner: "Dinner",
-};
-
-const PRICE_LABELS: Record<PricePref, string> = {
-  budget: "Budget-Friendly",
-  moderate: "Moderate",
-  premium: "Premium / Organic",
-};
-
-const TASTE_LABELS: Record<TastePref, string> = {
-  sweet: "Mildly Sweet (Safe)",
-  savory: "Savory",
-  spicy: "Spicy / Desi",
-  mild: "Mild / Gentle",
-};
 
 // Curated South Asian reference fallback foods if Supabase table is empty
 const SAMPLE_SOUTH_ASIAN_FOODS: FoodCombination[] = [
