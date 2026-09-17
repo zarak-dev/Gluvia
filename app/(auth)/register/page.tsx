@@ -14,7 +14,8 @@ import {
 
 export const metadata: Metadata = {
   title: "Register — Gluvia",
-  description: "Create your Gluvia account to start tracking diabetes and glucose metrics.",
+  description:
+    "Create your Gluvia account to start tracking diabetes and glucose metrics.",
 };
 
 export default function RegisterPage(): React.ReactElement {

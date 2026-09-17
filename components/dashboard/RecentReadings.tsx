@@ -8,12 +8,7 @@ import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
 import { MEAL_TAG_LABELS, SUGAR_LEVEL_LABELS } from "@/lib/constants";
-import {
-  cn,
-  formatDate,
-  getSugarLevel,
-  getSugarBadgeClass,
-} from "@/lib/utils";
+import { cn, formatDate, getSugarLevel, getSugarBadgeClass } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +41,9 @@ export function RecentReadings({
   const removeReading = useAppStore((state) => state.removeReading);
 
   const [readings, setReadings] = useState<SugarReading[]>(initialReadings);
-  const [readingToDelete, setReadingToDelete] = useState<SugarReading | null>(null);
+  const [readingToDelete, setReadingToDelete] = useState<SugarReading | null>(
+    null
+  );
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -133,10 +130,12 @@ export function RecentReadings({
             {readings.slice(0, 10).map((reading) => {
               const level = getSugarLevel(reading.sugar_mg_dl);
               const formattedDate = formatDate(reading.reading_date);
-              const timeString = new Date(reading.reading_date).toLocaleTimeString(
-                "en-PK",
-                { hour: "2-digit", minute: "2-digit" }
-              );
+              const timeString = new Date(
+                reading.reading_date
+              ).toLocaleTimeString("en-PK", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
 
               return (
                 <TableRow key={reading.id}>
@@ -151,7 +150,9 @@ export function RecentReadings({
                       <span className="text-base font-bold">
                         {reading.sugar_mg_dl}
                       </span>
-                      <span className="text-xs text-muted-foreground">mg/dL</span>
+                      <span className="text-xs text-muted-foreground">
+                        mg/dL
+                      </span>
                       <span
                         className={cn(
                           "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold",

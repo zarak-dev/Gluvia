@@ -53,11 +53,7 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
         </Avatar>
       </header>
 
-      <MobileSidebar
-        user={user}
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-      />
+      <MobileSidebar user={user} isOpen={isOpen} onOpenChange={setIsOpen} />
     </>
   );
 }

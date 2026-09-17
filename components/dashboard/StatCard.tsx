@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  type LucideIcon,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, type LucideIcon } from "lucide-react";
 
 import { cn, getSugarColorClass, getSugarBadgeClass } from "@/lib/utils";
 import { SUGAR_LEVEL_LABELS } from "@/lib/constants";
@@ -31,7 +26,12 @@ export function StatCard({
   className,
 }: StatCardProps): React.ReactElement {
   return (
-    <Card className={cn("overflow-hidden transition-shadow hover:shadow-md", className)}>
+    <Card
+      className={cn(
+        "overflow-hidden transition-shadow hover:shadow-md",
+        className
+      )}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}

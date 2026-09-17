@@ -11,7 +11,13 @@ import {
   Tooltip,
   ReferenceLine,
 } from "recharts";
-import { AlertCircle, TrendingUp, Award, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  AlertCircle,
+  TrendingUp,
+  Award,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 
 import {
   SUGAR_THRESHOLDS,
@@ -59,7 +65,10 @@ interface CustomTooltipProps {
   }>;
 }
 
-function CustomTooltip({ active, payload }: CustomTooltipProps): React.ReactElement | null {
+function CustomTooltip({
+  active,
+  payload,
+}: CustomTooltipProps): React.ReactElement | null {
   if (!active || !payload || !payload.length) return null;
   const data = payload[0].payload;
   const level = getSugarLevel(data.sugar);
@@ -78,7 +87,9 @@ function CustomTooltip({ active, payload }: CustomTooltipProps): React.ReactElem
         </span>
       </div>
       <div className="text-muted-foreground">
-        <div>{data.fullDate} at {data.time}</div>
+        <div>
+          {data.fullDate} at {data.time}
+        </div>
         <div className="mt-0.5 font-medium text-foreground">
           Timing: {data.mealTag}
         </div>
@@ -122,26 +133,24 @@ export function SugarTrendChart({
   }, [readings, daysCount]);
 
   const chartData: ChartDataPoint[] = useMemo(() => {
-    return [...filteredReadings]
-      .reverse()
-      .map((r) => {
-        const d = new Date(r.reading_date);
-        return {
-          id: r.id,
-          displayDate: d.toLocaleDateString("en-PK", {
-            month: "short",
-            day: "numeric",
-          }),
-          fullDate: formatDate(r.reading_date),
-          time: d.toLocaleTimeString("en-PK", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          sugar: r.sugar_mg_dl,
-          mealTag: MEAL_TAG_LABELS[r.meal_tag],
-          rawReading: r,
-        };
-      });
+    return [...filteredReadings].reverse().map((r) => {
+      const d = new Date(r.reading_date);
+      return {
+        id: r.id,
+        displayDate: d.toLocaleDateString("en-PK", {
+          month: "short",
+          day: "numeric",
+        }),
+        fullDate: formatDate(r.reading_date),
+        time: d.toLocaleTimeString("en-PK", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        sugar: r.sugar_mg_dl,
+        mealTag: MEAL_TAG_LABELS[r.meal_tag],
+        rawReading: r,
+      };
+    });
   }, [filteredReadings]);
 
   const metrics = useMemo(() => {
@@ -219,7 +228,9 @@ export function SugarTrendChart({
               mg/dL
             </span>
           </div>
-          <p className="text-[11px] text-muted-foreground">Peak in selected period</p>
+          <p className="text-[11px] text-muted-foreground">
+            Peak in selected period
+          </p>
         </Card>
 
         <Card className="p-4 space-y-1">
@@ -233,7 +244,9 @@ export function SugarTrendChart({
               mg/dL
             </span>
           </div>
-          <p className="text-[11px] text-muted-foreground">Lowest in selected period</p>
+          <p className="text-[11px] text-muted-foreground">
+            Lowest in selected period
+          </p>
         </Card>
       </div>
 
@@ -273,7 +286,8 @@ export function SugarTrendChart({
                 No readings recorded within the past {daysCount} days.
               </p>
               <p className="mt-1 text-xs">
-                Log readings on the &ldquo;Log Reading&rdquo; page to populate this chart.
+                Log readings on the &ldquo;Log Reading&rdquo; page to populate
+                this chart.
               </p>
             </div>
           ) : !isMounted ? (
@@ -361,12 +375,14 @@ export function SugarTrendChart({
           Glycemic Threshold Context
         </AlertTitle>
         <AlertDescription className="text-xs leading-relaxed mt-1">
-          The reference thresholds displayed (Low: &lt;{SUGAR_THRESHOLDS.LOW} mg/dL,
-          Target Normal: &le;{SUGAR_THRESHOLDS.NORMAL_MAX} mg/dL, Elevated: &le;{SUGAR_THRESHOLDS.ELEVATED_MAX} mg/dL)
-          represent general application categorization and do not constitute a universal
-          clinical or medical diagnosis. Target glucose levels vary individually based on
-          age, diabetes type, and prescribed treatment regimen. Always consult your personal
-          physician or endocrinologist for your individualized glycemic targets.
+          The reference thresholds displayed (Low: &lt;{SUGAR_THRESHOLDS.LOW}{" "}
+          mg/dL, Target Normal: &le;{SUGAR_THRESHOLDS.NORMAL_MAX} mg/dL,
+          Elevated: &le;{SUGAR_THRESHOLDS.ELEVATED_MAX} mg/dL) represent general
+          application categorization and do not constitute a universal clinical
+          or medical diagnosis. Target glucose levels vary individually based on
+          age, diabetes type, and prescribed treatment regimen. Always consult
+          your personal physician or endocrinologist for your individualized
+          glycemic targets.
         </AlertDescription>
       </Alert>
     </div>

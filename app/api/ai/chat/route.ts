@@ -5,7 +5,10 @@ import { callGemini } from "@/lib/gemini";
 import { AI_LIMITS } from "@/lib/constants";
 
 const chatRequestSchema = z.object({
-  message: z.string().min(1, "Message cannot be empty").max(500, "Message too long"),
+  message: z
+    .string()
+    .min(1, "Message cannot be empty")
+    .max(500, "Message too long"),
   context: z
     .object({
       lastReading: z.number().optional().nullable(),

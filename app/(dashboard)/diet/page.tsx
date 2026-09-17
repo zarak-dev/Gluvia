@@ -64,10 +64,7 @@ const dietFormSchema = z.object({
     ),
   activity_minutes: z.coerce
     .number({ invalid_type_error: "Please enter a valid number" })
-    .min(
-      FORM_LIMITS.ACTIVITY_MIN,
-      `Activity cannot be negative`
-    )
+    .min(FORM_LIMITS.ACTIVITY_MIN, `Activity cannot be negative`)
     .max(
       FORM_LIMITS.ACTIVITY_MAX,
       `Activity cannot exceed ${FORM_LIMITS.ACTIVITY_MAX} min`
@@ -392,8 +389,8 @@ export default function DietPage(): React.ReactElement {
                 No Diet Plan Active
               </h3>
               <p className="mt-1 text-sm text-muted-foreground max-w-sm">
-                Fill in your calorie target and body weight on the left to generate
-                a culturally tailored South Asian diabetes diet plan.
+                Fill in your calorie target and body weight on the left to
+                generate a culturally tailored South Asian diabetes diet plan.
               </p>
             </div>
           )}
@@ -407,11 +404,11 @@ export default function DietPage(): React.ReactElement {
           Medical Nutrition Disclaimer
         </AlertTitle>
         <AlertDescription className="text-xs leading-relaxed mt-1">
-          AI-generated meal plans are general dietary guidance aligned with South
-          Asian food staples and do not constitute clinical nutritional therapy or
-          prescriptions. Do not adjust your insulin units or oral hypoglycemic
-          medication without consulting your personal physician or certified
-          diabetes educator.
+          AI-generated meal plans are general dietary guidance aligned with
+          South Asian food staples and do not constitute clinical nutritional
+          therapy or prescriptions. Do not adjust your insulin units or oral
+          hypoglycemic medication without consulting your personal physician or
+          certified diabetes educator.
         </AlertDescription>
       </Alert>
     </div>

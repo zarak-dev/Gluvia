@@ -67,7 +67,9 @@ export function AIChatWidget(): React.ReactElement {
     // Compute patient context from store readings
     const lastReading = readings.length > 0 ? readings[0].sugar_mg_dl : null;
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const recent = readings.filter((r) => new Date(r.reading_date) >= sevenDaysAgo);
+    const recent = readings.filter(
+      (r) => new Date(r.reading_date) >= sevenDaysAgo
+    );
     const average7day =
       recent.length > 0
         ? Math.round(average(recent.map((r) => r.sugar_mg_dl)))
@@ -179,8 +181,8 @@ export function AIChatWidget(): React.ReactElement {
           <div className="flex-1 overflow-y-auto p-3 space-y-3 text-xs bg-muted/20">
             {/* Safety Notice Note */}
             <div className="rounded-md bg-muted/60 p-2 text-[11px] text-muted-foreground leading-tight text-center">
-              Informational lifestyle guidance only. In case of emergency or severe
-              symptoms, please consult your doctor immediately.
+              Informational lifestyle guidance only. In case of emergency or
+              severe symptoms, please consult your doctor immediately.
             </div>
 
             {/* Empty state welcome message */}

@@ -9,17 +9,32 @@ import type { DietPlan } from "@/types";
 const dietRequestSchema = z.object({
   calories: z
     .number()
-    .min(FORM_LIMITS.CALORIES_MIN, `Minimum calories: ${FORM_LIMITS.CALORIES_MIN}`)
-    .max(FORM_LIMITS.CALORIES_MAX, `Maximum calories: ${FORM_LIMITS.CALORIES_MAX}`),
+    .min(
+      FORM_LIMITS.CALORIES_MIN,
+      `Minimum calories: ${FORM_LIMITS.CALORIES_MIN}`
+    )
+    .max(
+      FORM_LIMITS.CALORIES_MAX,
+      `Maximum calories: ${FORM_LIMITS.CALORIES_MAX}`
+    ),
   sugarLevel: z.enum(["low", "normal", "elevated", "high"]),
   weight: z
     .number()
     .min(FORM_LIMITS.WEIGHT_MIN, `Minimum weight: ${FORM_LIMITS.WEIGHT_MIN} kg`)
-    .max(FORM_LIMITS.WEIGHT_MAX, `Maximum weight: ${FORM_LIMITS.WEIGHT_MAX} kg`),
+    .max(
+      FORM_LIMITS.WEIGHT_MAX,
+      `Maximum weight: ${FORM_LIMITS.WEIGHT_MAX} kg`
+    ),
   activityMinutes: z
     .number()
-    .min(FORM_LIMITS.ACTIVITY_MIN, `Minimum activity: ${FORM_LIMITS.ACTIVITY_MIN} min`)
-    .max(FORM_LIMITS.ACTIVITY_MAX, `Maximum activity: ${FORM_LIMITS.ACTIVITY_MAX} min`),
+    .min(
+      FORM_LIMITS.ACTIVITY_MIN,
+      `Minimum activity: ${FORM_LIMITS.ACTIVITY_MIN} min`
+    )
+    .max(
+      FORM_LIMITS.ACTIVITY_MAX,
+      `Maximum activity: ${FORM_LIMITS.ACTIVITY_MAX} min`
+    ),
 });
 
 const DIET_SYSTEM_PROMPT = `You are an expert South Asian clinical nutritionist and diabetes lifestyle advisor.
@@ -120,7 +135,9 @@ Follow the exact section headers (BREAKFAST:, LUNCH:, DINNER:, SNACKS:) and incl
     return NextResponse.json({ plan: insertedPlan as DietPlan });
   } catch (err: unknown) {
     const message =
-      err instanceof Error ? err.message : "Internal error generating diet plan";
+      err instanceof Error
+        ? err.message
+        : "Internal error generating diet plan";
     return NextResponse.json(
       { message: `Failed to generate diet plan: ${message}` },
       { status: 500 }

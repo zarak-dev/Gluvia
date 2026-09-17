@@ -9,7 +9,11 @@ import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
-import { FORM_LIMITS, MEAL_TAG_LABELS, SUGAR_LEVEL_LABELS } from "@/lib/constants";
+import {
+  FORM_LIMITS,
+  MEAL_TAG_LABELS,
+  SUGAR_LEVEL_LABELS,
+} from "@/lib/constants";
 import { getSugarBadgeClass, getSugarLevel, cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { Button } from "@/components/ui/button";
@@ -266,9 +270,7 @@ export function LogReadingForm({
                 <SelectValue placeholder="Select meal tag" />
               </SelectTrigger>
               <SelectContent>
-                {(
-                  Object.keys(MEAL_TAG_LABELS) as Array<MealTag>
-                ).map((tag) => (
+                {(Object.keys(MEAL_TAG_LABELS) as Array<MealTag>).map((tag) => (
                   <SelectItem key={tag} value={tag}>
                     {MEAL_TAG_LABELS[tag]}
                   </SelectItem>
@@ -296,9 +298,7 @@ export function LogReadingForm({
           placeholder="e.g. 1 Whole wheat Roti, Daal, Salad"
           disabled={isSubmitting}
           aria-invalid={!!errors.food_eaten}
-          aria-describedby={
-            errors.food_eaten ? "food_eaten_error" : undefined
-          }
+          aria-describedby={errors.food_eaten ? "food_eaten_error" : undefined}
           {...register("food_eaten")}
         />
         {errors.food_eaten && (

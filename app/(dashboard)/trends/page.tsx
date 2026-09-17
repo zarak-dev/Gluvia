@@ -8,7 +8,8 @@ import type { SugarReading } from "@/types";
 
 export const metadata: Metadata = {
   title: "Trends — Gluvia",
-  description: "View glycemic trends, in-range ratios, and glucose trajectory over 7, 30, and 90 days.",
+  description:
+    "View glycemic trends, in-range ratios, and glucose trajectory over 7, 30, and 90 days.",
 };
 
 export default async function TrendsPage(): Promise<React.ReactElement> {
@@ -40,8 +41,8 @@ export default async function TrendsPage(): Promise<React.ReactElement> {
           Glycemic Trends & Analysis
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Track your blood sugar patterns over time, monitor percentage in target range,
-          and recognize spikes across different meal timings.
+          Track your blood sugar patterns over time, monitor percentage in
+          target range, and recognize spikes across different meal timings.
         </p>
       </div>
 

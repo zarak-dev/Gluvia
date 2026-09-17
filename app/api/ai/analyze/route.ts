@@ -16,7 +16,9 @@ const readingSchema = z.object({
 
 const analyzeRequestSchema = z.object({
   username: z.string().default("Patient"),
-  readings: z.array(readingSchema).min(1, "At least one reading is required for clinical analysis"),
+  readings: z
+    .array(readingSchema)
+    .min(1, "At least one reading is required for clinical analysis"),
 });
 
 const ANALYZE_SYSTEM_PROMPT = `You are a clinical diabetes analytics specialist preparing an objective, factual glycemic summary for review between a South Asian patient and their endocrinologist or physician.

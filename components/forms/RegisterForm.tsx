@@ -27,9 +27,7 @@ const registerSchema = z
       .string()
       .min(1, "Email is required")
       .email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -145,9 +143,7 @@ export function RegisterForm(): React.ReactElement {
           autoComplete="email"
           disabled={isSubmitting}
           aria-invalid={!!errors.email}
-          aria-describedby={
-            errors.email ? "register-email-error" : undefined
-          }
+          aria-describedby={errors.email ? "register-email-error" : undefined}
           {...register("email")}
         />
         {errors.email && (

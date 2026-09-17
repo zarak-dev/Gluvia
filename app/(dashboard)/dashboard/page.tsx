@@ -19,7 +19,8 @@ import type { SugarReading, UserProfile } from "@/types";
 
 export const metadata: Metadata = {
   title: "Dashboard — Gluvia",
-  description: "Monitor daily glucose readings, 7-day glycemic average, and trends.",
+  description:
+    "Monitor daily glucose readings, 7-day glycemic average, and trends.",
 };
 
 export default async function DashboardPage(): Promise<React.ReactElement> {
@@ -63,7 +64,8 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
   // Server-side calculation: Latest reading
   const latestReading = readings[0] ?? null;
   const latestSugar = latestReading ? latestReading.sugar_mg_dl : null;
-  const latestLevel = latestSugar !== null ? getSugarLevel(latestSugar) : undefined;
+  const latestLevel =
+    latestSugar !== null ? getSugarLevel(latestSugar) : undefined;
 
   // Server-side calculation: 7-day average
   const now = new Date();
@@ -79,9 +81,7 @@ export default async function DashboardPage(): Promise<React.ReactElement> {
     average7day !== null ? getSugarLevel(average7day) : undefined;
 
   // Server-side calculation: Trend direction (from chronological order)
-  const chronologicalValues = [...readings]
-    .reverse()
-    .map((r) => r.sugar_mg_dl);
+  const chronologicalValues = [...readings].reverse().map((r) => r.sugar_mg_dl);
   const trend = calculateTrend(chronologicalValues);
 
   return (

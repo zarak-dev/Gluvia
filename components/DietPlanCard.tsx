@@ -76,7 +76,9 @@ function parseDietSections(text: string): ParsedMeal[] {
     const current = foundIndices[i];
     const startIndex = current.index + current.keyLength;
     const endIndex =
-      i + 1 < foundIndices.length ? foundIndices[i + 1].index : normalized.length;
+      i + 1 < foundIndices.length
+        ? foundIndices[i + 1].index
+        : normalized.length;
 
     const content = normalized.slice(startIndex, endIndex).trim();
     if (content) {

@@ -42,10 +42,5 @@ export default async function ReportPage(): Promise<React.ReactElement> {
 
   const readings: SugarReading[] = (rawReadings ?? []) as SugarReading[];
 
-  return (
-    <ReportView
-      initialReadings={readings}
-      username={username}
-    />
-  );
+  return <ReportView initialReadings={readings} username={username} />;
 }

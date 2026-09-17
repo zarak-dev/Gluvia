@@ -19,8 +19,9 @@ export default function FoodsPage(): React.ReactElement {
           South Asian Food Suggestions
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Explore carbohydrate-controlled South Asian meal pairings designed to minimize
-          post-prandial glycemic spikes while honoring traditional recipes.
+          Explore carbohydrate-controlled South Asian meal pairings designed to
+          minimize post-prandial glycemic spikes while honoring traditional
+          recipes.
         </p>
       </div>
 
@@ -32,10 +33,11 @@ export default function FoodsPage(): React.ReactElement {
           Nutritional Guidance Notice
         </AlertTitle>
         <AlertDescription className="text-xs leading-relaxed mt-1">
-          Nutritional metrics represent standard recipe estimates for South Asian
-          cooking. Preparation methods, oil volumes, and portion sizes will alter
-          carbohydrate and calorie impact. Regularly check your post-prandial blood
-          sugar 2 hours after meals to observe individual glycemic responses.
+          Nutritional metrics represent standard recipe estimates for South
+          Asian cooking. Preparation methods, oil volumes, and portion sizes
+          will alter carbohydrate and calorie impact. Regularly check your
+          post-prandial blood sugar 2 hours after meals to observe individual
+          glycemic responses.
         </AlertDescription>
       </Alert>
     </div>

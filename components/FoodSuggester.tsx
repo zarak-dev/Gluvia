@@ -1,13 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import {
-  Apple,
-  Filter,
-  Loader2,
-  Sparkles,
-  Info,
-} from "lucide-react";
+import { Apple, Filter, Loader2, Sparkles, Info } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -96,7 +90,8 @@ const SAMPLE_SOUTH_ASIAN_FOODS: FoodCombination[] = [
     time_of_day: "dinner",
     price_pref: "moderate",
     taste_pref: "savory",
-    food_item: "Grilled Tikka Chicken Breast + Steamed Saag/Palak + Kachumber Salad",
+    food_item:
+      "Grilled Tikka Chicken Breast + Steamed Saag/Palak + Kachumber Salad",
     calories: 340,
     protein: 36,
     carbohydrates: 12,
@@ -252,14 +247,18 @@ export function FoodSuggester(): React.ReactElement {
             Filter South Asian Food Pairings
           </CardTitle>
           <CardDescription>
-            Select your diabetic stage, meal timing, budget, and taste preference
+            Select your diabetic stage, meal timing, budget, and taste
+            preference
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Sugar State */}
             <div className="space-y-1.5">
-              <label htmlFor="sugar_state_select" className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="sugar_state_select"
+                className="text-xs font-semibold text-foreground"
+              >
                 Diabetes Status
               </label>
               <Select
@@ -270,20 +269,23 @@ export function FoodSuggester(): React.ReactElement {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(
-                    Object.keys(SUGAR_STATE_LABELS) as Array<SugarState>
-                  ).map((st) => (
-                    <SelectItem key={st} value={st}>
-                      {SUGAR_STATE_LABELS[st]}
-                    </SelectItem>
-                  ))}
+                  {(Object.keys(SUGAR_STATE_LABELS) as Array<SugarState>).map(
+                    (st) => (
+                      <SelectItem key={st} value={st}>
+                        {SUGAR_STATE_LABELS[st]}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectContent>
               </Select>
             </div>
 
             {/* Time of Day */}
             <div className="space-y-1.5">
-              <label htmlFor="time_select" className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="time_select"
+                className="text-xs font-semibold text-foreground"
+              >
                 Meal Timing
               </label>
               <Select
@@ -305,7 +307,10 @@ export function FoodSuggester(): React.ReactElement {
 
             {/* Price Preference */}
             <div className="space-y-1.5">
-              <label htmlFor="price_select" className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="price_select"
+                className="text-xs font-semibold text-foreground"
+              >
                 Price Preference
               </label>
               <Select
@@ -316,9 +321,7 @@ export function FoodSuggester(): React.ReactElement {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(
-                    Object.keys(PRICE_LABELS) as Array<PricePref>
-                  ).map((pr) => (
+                  {(Object.keys(PRICE_LABELS) as Array<PricePref>).map((pr) => (
                     <SelectItem key={pr} value={pr}>
                       {PRICE_LABELS[pr]}
                     </SelectItem>
@@ -329,7 +332,10 @@ export function FoodSuggester(): React.ReactElement {
 
             {/* Taste Preference */}
             <div className="space-y-1.5">
-              <label htmlFor="taste_select" className="text-xs font-semibold text-foreground">
+              <label
+                htmlFor="taste_select"
+                className="text-xs font-semibold text-foreground"
+              >
                 Flavor & Spice
               </label>
               <Select
@@ -340,9 +346,7 @@ export function FoodSuggester(): React.ReactElement {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(
-                    Object.keys(TASTE_LABELS) as Array<TastePref>
-                  ).map((tp) => (
+                  {(Object.keys(TASTE_LABELS) as Array<TastePref>).map((tp) => (
                     <SelectItem key={tp} value={tp}>
                       {TASTE_LABELS[tp]}
                     </SelectItem>
@@ -386,8 +390,8 @@ export function FoodSuggester(): React.ReactElement {
             No exact matching combinations
           </h3>
           <p className="mt-1 text-xs text-muted-foreground max-w-sm">
-            Try switching price preference or flavor profile to explore alternative
-            diabetic-friendly South Asian dishes.
+            Try switching price preference or flavor profile to explore
+            alternative diabetic-friendly South Asian dishes.
           </p>
         </div>
       ) : (
@@ -407,7 +411,8 @@ export function FoodSuggester(): React.ReactElement {
                   </Badge>
                 </div>
                 <CardDescription className="text-xs">
-                  {SUGAR_STATE_LABELS[food.sugar_state]} • {TIME_LABELS[food.time_of_day]}
+                  {SUGAR_STATE_LABELS[food.sugar_state]} •{" "}
+                  {TIME_LABELS[food.time_of_day]}
                 </CardDescription>
               </CardHeader>
 
@@ -465,7 +470,9 @@ export function FoodSuggester(): React.ReactElement {
 
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-1">
                   <Info className="h-3.5 w-3.5 text-primary shrink-0" />
-                  <span>High fiber buffers glucose absorption from roti & daal.</span>
+                  <span>
+                    High fiber buffers glucose absorption from roti & daal.
+                  </span>
                 </div>
               </CardContent>
             </Card>

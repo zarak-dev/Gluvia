@@ -13,7 +13,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const metadata: Metadata = {
   title: "Log Reading — Gluvia",
-  description: "Record a new blood glucose reading with meal tags and diet notes.",
+  description:
+    "Record a new blood glucose reading with meal tags and diet notes.",
 };
 
 export default function LogReadingPage(): React.ReactElement {
@@ -25,8 +26,8 @@ export default function LogReadingPage(): React.ReactElement {
           Log Blood Glucose
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Record your blood sugar measurement along with meal context to maintain
-          an accurate glycemic log.
+          Record your blood sugar measurement along with meal context to
+          maintain an accurate glycemic log.
         </p>
       </div>
 
@@ -47,8 +48,8 @@ export default function LogReadingPage(): React.ReactElement {
         <CardHeader>
           <CardTitle className="text-lg">Reading Details</CardTitle>
           <CardDescription>
-            All blood glucose values are categorized according to standard target
-            ranges.
+            All blood glucose values are categorized according to standard
+            target ranges.
           </CardDescription>
         </CardHeader>
         <CardContent>

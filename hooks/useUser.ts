@@ -89,18 +89,16 @@ export function useUser(): UseUserReturn {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!isMounted) return;
-        if (session?.user) {
-          void fetchProfile(session.user.id);
-        } else {
-          fetchedUserIdRef.current = null;
-          setUser(null);
-          setIsLoading(false);
-        }
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      if (session?.user) {
+        void fetchProfile(session.user.id);
+      } else {
+        fetchedUserIdRef.current = null;
+        setUser(null);
+        setIsLoading(false);
       }
-    );
+    });
 
     return () => {
       isMounted = false;

@@ -17,7 +17,11 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { SUGAR_THRESHOLDS, SUGAR_LEVEL_LABELS, MEAL_TAG_LABELS } from "@/lib/constants";
+import {
+  SUGAR_THRESHOLDS,
+  SUGAR_LEVEL_LABELS,
+  MEAL_TAG_LABELS,
+} from "@/lib/constants";
 import {
   average,
   formatDate,
@@ -153,7 +157,9 @@ export function ReportView({
 
   const handleGenerateAnalysis = async (): Promise<void> => {
     if (readings.length === 0) {
-      toast.error("Please log at least one reading before generating analysis.");
+      toast.error(
+        "Please log at least one reading before generating analysis."
+      );
       return;
     }
 
@@ -174,14 +180,17 @@ export function ReportView({
 
       if (!response.ok) {
         const errObj = data as { message?: string };
-        throw new Error(errObj.message || "Failed to generate clinical analysis");
+        throw new Error(
+          errObj.message || "Failed to generate clinical analysis"
+        );
       }
 
       const resObj = data as { summary: string };
       setAnalysisSummary(resObj.summary);
       toast.success("AI clinical summary generated successfully!");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error analyzing readings";
+      const msg =
+        err instanceof Error ? err.message : "Error analyzing readings";
       setAnalyzeError(msg);
       toast.error(msg);
     } finally {
@@ -363,7 +372,8 @@ export function ReportView({
           <div className="flex items-center gap-3">
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
             <span className="text-sm font-medium">
-              Generating clinical overview, pattern analysis, and talking points with Gemini...
+              Generating clinical overview, pattern analysis, and talking points
+              with Gemini...
             </span>
           </div>
         </Card>
@@ -439,7 +449,9 @@ export function ReportView({
                       <TableRow key={r.id}>
                         <TableCell className="text-xs">
                           <div className="font-medium">{formattedDate}</div>
-                          <div className="text-muted-foreground">{timeString}</div>
+                          <div className="text-muted-foreground">
+                            {timeString}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1.5">
@@ -487,11 +499,12 @@ export function ReportView({
           Clinical Consultation Notice
         </AlertTitle>
         <AlertDescription className="text-xs leading-relaxed mt-1">
-          This report and AI clinical synthesis are compiled strictly as an informational
-          aid to assist discussion during professional medical consultations. It does not
-          constitute a clinical diagnosis, nor does it establish or modify any medical
-          treatment regimen. Target glycemic ranges must always be established by your
-          personal healthcare physician.
+          This report and AI clinical synthesis are compiled strictly as an
+          informational aid to assist discussion during professional medical
+          consultations. It does not constitute a clinical diagnosis, nor does
+          it establish or modify any medical treatment regimen. Target glycemic
+          ranges must always be established by your personal healthcare
+          physician.
         </AlertDescription>
       </Alert>
     </div>
