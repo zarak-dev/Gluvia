@@ -1,43 +1,51 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { FileText, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { redirect } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/server";
+import { ReportView } from "@/components/report/ReportView";
+import type { SugarReading, UserProfile } from "@/types";
 
 export const metadata: Metadata = {
   title: "Doctor Report — Gluvia",
-  description: "Export structured glycemic summaries for your physician consultations.",
+  description:
+    "Generate clinical glycemic summaries and export PDF reports for physician consultations.",
 };
 
-export default function ReportPage(): React.ReactElement {
+export default async function ReportPage(): Promise<React.ReactElement> {
+  const supabase = createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  const typedProfile = profile as UserProfile | null;
+  const username = typedProfile?.username ?? "Patient";
+
+  // Fetch latest 30 readings
+  const { data: rawReadings } = await supabase
+    .from("sugar_readings")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("reading_date", { ascending: false })
+    .limit(30);
+
+  const readings: SugarReading[] = (rawReadings ?? []) as SugarReading[];
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <Card className="text-center p-8">
-        <CardHeader className="flex flex-col items-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-2">
-            <FileText className="h-7 w-7" />
-          </div>
-          <CardTitle className="text-2xl">Doctor Report Export</CardTitle>
-          <CardDescription className="max-w-md mt-2">
-            PDF report generation summarizing blood sugar history for your
-            endocrinologist is scheduled for Phase 3.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button asChild variant="outline">
-            <Link href="/dashboard" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Return to Dashboard
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+    <ReportView
+      initialReadings={readings}
+      username={username}
+    />
   );
 }
