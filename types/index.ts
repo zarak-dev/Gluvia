@@ -23,6 +23,8 @@ export type TrendDirection = "up" | "down" | "stable";
 export interface UserProfile {
   id: string;
   username: string | null;
+  weekly_report_enabled?: boolean;
+  last_weekly_report_sent_at?: string | null;
   created_at: string;
 }
 

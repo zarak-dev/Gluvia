@@ -13,10 +13,15 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { updateUsernameAction, changePasswordAction } from "@/app/actions/profile";
+import {
+  updateUsernameAction,
+  changePasswordAction,
+  updateReportPreferenceAction,
+} from "@/app/actions/profile";
 import { logoutAction } from "@/app/actions/auth";
 import { useAppStore } from "@/store/useAppStore";
 import { Button } from "@/components/ui/button";
@@ -53,6 +58,12 @@ export function ProfileSettingsView({
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState<boolean>(false);
+
+  // Weekly report notification state
+  const [weeklyReportEnabled, setWeeklyReportEnabled] = useState<boolean>(
+    user?.weekly_report_enabled ?? true
+  );
+  const [isUpdatingReportPref, setIsUpdatingReportPref] = useState<boolean>(false);
 
   const initials = username
     ? username.slice(0, 2).toUpperCase()
@@ -118,6 +129,25 @@ export function ProfileSettingsView({
       toast.error("Failed to update password");
     } finally {
       setIsUpdatingPassword(false);
+    }
+  };
+
+  // Handle Weekly report toggle
+  const handleToggleWeeklyReport = async (enabled: boolean) => {
+    setIsUpdatingReportPref(true);
+    try {
+      const res = await updateReportPreferenceAction(enabled);
+      if (res.error) {
+        toast.error(res.error);
+      } else {
+        setWeeklyReportEnabled(enabled);
+        toast.success(res.message || "Notification preference updated");
+        router.refresh();
+      }
+    } catch {
+      toast.error("Failed to update notification preference");
+    } finally {
+      setIsUpdatingReportPref(false);
     }
   };
 
@@ -290,6 +320,48 @@ export function ProfileSettingsView({
           </CardContent>
         </Card>
       </div>
+
+      {/* Weekly Health Report Preference Card */}
+      <Card className="border-[#E8EEF2] dark:border-border shadow-xs">
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-primary">
+              <FileText className="h-5 w-5" />
+              <CardTitle className="text-base">Weekly Health Report</CardTitle>
+            </div>
+            <CardDescription className="text-xs max-w-xl">
+              Receive an automated clinical summary of your 7-day glucose averages, target in-range ratios, and meal logs every week via email.
+            </CardDescription>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={weeklyReportEnabled}
+            disabled={isUpdatingReportPref}
+            onClick={() => handleToggleWeeklyReport(!weeklyReportEnabled)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+              weeklyReportEnabled ? "bg-[#20B486]" : "bg-muted"
+            }`}
+          >
+            <span className="sr-only">Toggle weekly health report emails</span>
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                weeklyReportEnabled ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 p-2.5 rounded-lg border border-border/50">
+            <CheckCircle2 className="h-4 w-4 text-[#20B486] shrink-0" />
+            <span>
+              {weeklyReportEnabled
+                ? `Weekly reports are enabled and will be delivered to ${email || "your registered email"}.`
+                : "Weekly reports are currently paused. You will not receive recurring email summaries."}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Account Session & Sign Out Card */}
       <Card className="border-rose-100 dark:border-rose-950/50 bg-rose-50/30 dark:bg-rose-950/10 shadow-xs">

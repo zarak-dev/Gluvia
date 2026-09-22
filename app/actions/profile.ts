@@ -91,3 +91,46 @@ export async function changePasswordAction(
     return { error: msg };
   }
 }
+
+/**
+ * Updates the user's weekly health report email preference in public.profiles.
+ */
+export async function updateReportPreferenceAction(
+  enabled: boolean
+): Promise<ProfileActionResult> {
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return { error: "You must be signed in to update notification settings." };
+    }
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ weekly_report_enabled: enabled })
+      .eq("id", user.id);
+
+    if (updateError) {
+      return { error: updateError.message };
+    }
+
+    revalidatePath("/profile");
+    return {
+      success: true,
+      message: enabled
+        ? "Weekly health reports enabled."
+        : "Weekly health reports disabled.",
+    };
+  } catch (err) {
+    const msg =
+      err instanceof Error
+        ? err.message
+        : "Failed to update notification settings.";
+    return { error: msg };
+  }
+}
+

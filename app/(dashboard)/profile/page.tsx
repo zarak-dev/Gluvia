@@ -22,7 +22,7 @@ export default async function ProfilePage(): Promise<React.ReactElement> {
   const supabase = createClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, username, created_at")
+    .select("id, username, weekly_report_enabled, last_weekly_report_sent_at, created_at")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -30,6 +30,8 @@ export default async function ProfilePage(): Promise<React.ReactElement> {
     ? {
         id: profile.id,
         username: profile.username,
+        weekly_report_enabled: profile.weekly_report_enabled ?? true,
+        last_weekly_report_sent_at: profile.last_weekly_report_sent_at ?? null,
         created_at: profile.created_at,
       }
     : null;

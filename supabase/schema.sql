@@ -15,9 +15,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- User profiles (linked to Supabase Auth)
 CREATE TABLE public.profiles (
-  id         UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  username   TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  id                        UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username                  TEXT,
+  weekly_report_enabled     BOOLEAN NOT NULL DEFAULT true,
+  last_weekly_report_sent_at TIMESTAMPTZ,
+  created_at                TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Blood sugar readings
@@ -56,6 +58,25 @@ CREATE TABLE public.food_combinations (
   fat           NUMERIC(6, 2) NOT NULL,
   fiber         NUMERIC(6, 2) NOT NULL,
   sugar         NUMERIC(6, 2) NOT NULL
+);
+
+-- Weekly health report delivery logs (idempotency & delivery tracking)
+CREATE TABLE public.weekly_report_logs (
+  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id             UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  recipient_email     TEXT NOT NULL,
+  period_start        TIMESTAMPTZ NOT NULL,
+  period_end          TIMESTAMPTZ NOT NULL,
+  sent_at             TIMESTAMPTZ NOT NULL DEFAULT now(),
+  status              TEXT NOT NULL CHECK (status IN ('sent', 'failed', 'skipped')),
+  provider_message_id TEXT,
+  readings_count      INTEGER DEFAULT 0,
+  average_sugar       INTEGER,
+  lowest_sugar        INTEGER,
+  highest_sugar       INTEGER,
+  error_message       TEXT,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT unique_user_period_success UNIQUE (user_id, period_start, period_end)
 );
 
 -- ============================================================
@@ -120,6 +141,11 @@ CREATE POLICY "diet_plans_delete_own" ON public.diet_plans
 -- Food combinations: public SELECT only (no write access for authenticated/anon)
 CREATE POLICY "food_combinations_select_public" ON public.food_combinations
   FOR SELECT USING (true);
+
+-- Weekly report logs: users can view only their own logs
+ALTER TABLE public.weekly_report_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "weekly_report_logs_select_own" ON public.weekly_report_logs
+  FOR SELECT USING (user_id = (SELECT auth.uid()));
 
 -- ============================================================
 -- Profile Creation Trigger
