@@ -350,7 +350,7 @@ export function ReportView({
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
             <span className="text-sm font-medium">
               Generating clinical overview, pattern analysis, and talking points
-              with Gemini...
+              with Aimmyy...
             </span>
           </div>
         </Card>
@@ -364,7 +364,7 @@ export function ReportView({
               AI Clinical Summary for Consultation
             </h2>
             <span className="text-xs text-muted-foreground">
-              Generated via Gemini 2.0
+              Generated via Aimmyy AI
             </span>
           </div>
 
