@@ -20,7 +20,7 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
 
   return (
     <aside
-      className={`hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30 border-r border-[#E8EEF2] bg-white ${
+      className={`hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 z-30 border-r border-[#E8EEF2] dark:border-border bg-white dark:bg-card ${
         className ?? ""
       }`}
     >
@@ -34,7 +34,7 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
             <Activity className="h-5 w-5" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-[#17324D]">
+          <span className="text-xl font-bold tracking-tight text-[#17324D] dark:text-foreground">
             Gluvia
           </span>
         </Link>
@@ -49,16 +49,16 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
         </nav>
 
         {/* User Profile & Logout Section (Screenshot Match) */}
-        <div className="border-t border-[#E8EEF2] pt-4 px-1">
-          <div className="flex items-center justify-between rounded-xl p-2 transition-colors hover:bg-slate-50/80">
+        <div className="border-t border-[#E8EEF2] dark:border-border pt-4 px-1">
+          <div className="flex items-center justify-between rounded-xl p-2 transition-colors hover:bg-slate-50/80 dark:hover:bg-muted/40">
             <div className="flex items-center gap-3 min-w-0">
-              <Avatar className="h-10 w-10 border border-[#E8EEF2]">
+              <Avatar className="h-10 w-10 border border-[#E8EEF2] dark:border-border">
                 <AvatarFallback className="bg-[#7190AB] text-white font-semibold text-xs">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col min-w-0">
-                <span className="truncate text-sm font-semibold text-[#17324D]">
+                <span className="truncate text-sm font-semibold text-[#17324D] dark:text-foreground">
                   {user?.username ?? "Zarak Khan"}
                 </span>
                 <form action={logoutAction} className="inline">
