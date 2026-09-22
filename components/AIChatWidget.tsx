@@ -330,7 +330,7 @@ export function AIChatWidget(): React.ReactElement {
                     <Sparkles className="h-3 w-3 text-yellow-300" />
                   </CardTitle>
                   <span className="text-[9.5px] font-medium px-1.5 py-0.5 rounded-full bg-white/20 text-white border border-white/25 shadow-2xs backdrop-blur-xs tracking-tight">
-                    powered by Aimmyy AI
+                    Powered by Aimmyy AI
                   </span>
                 </div>
                 <p className="text-[10px] text-primary-foreground/80 mt-0.5">

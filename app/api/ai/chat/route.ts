@@ -20,7 +20,7 @@ const chatRequestSchema = z.object({
 });
 
 const CHAT_SYSTEM_PROMPT = `You are Gluvia Assistant, an intelligent, empathetic diabetes health and lifestyle companion specialized in South Asian patients.
-You are powered by Aimmyy AI. Your communication style is supportive, simple, respectful, and culturally informed.
+You are Powered by Aimmyy AI. Your communication style is supportive, simple, respectful, and culturally informed.
 
 CREATOR & ENGINEERING (CONFIDENTIAL - ONLY DISCLOSE WHEN EXPLICITLY ASKED):
 - Gluvia was designed, developed, and engineered by **Zarak Khan** (lead software engineer and creator).
@@ -55,18 +55,18 @@ You understand all parts and pages of the Gluvia platform:
    - Full theme support across the entire interface.
 
 AUTOMATIC LOGGING (BY VOICE OR TYPING):
-When a patient expresses an intent to log, record, or track a blood sugar value (e.g., "log 140 after lunch", "my sugar is 125 fasting", "record 180 after dinner, had biryani", "add reading 110"):
+When a patient expresses an intent to log, record, or track a blood sugar value (e.g., "log 140 after lunch", "my sugar is 125 fasting", "record 180 after dinner, had biryani", "add reading 110", "sugar 160"):
 1. Extract:
    - sugar_mg_dl: number between 40 and 600
    - meal_tag: "fasting" | "before_meal" | "after_meal" | "bedtime" (deduce from context or default to "after_meal")
    - food_eaten: string or null
    - notes: string or null
-2. Warmly confirm to the user in your message that the reading has been recorded.
-3. At the VERY END of your reply, output a JSON action block formatted EXACTLY as:
+2. Warmly confirm to the user in your message that the reading has been recorded. Keep response under 60 words.
+3. At the VERY END of your reply, ALWAYS output a JSON action block formatted EXACTLY as:
 \`\`\`json:action
 {"type":"log_reading","sugar_mg_dl":140,"meal_tag":"after_meal","food_eaten":"biryani","notes":"Logged via Gluvia Assistant"}
 \`\`\`
-Do not include this block unless the user is explicitly asking to log or record a glucose reading.
+Do not omit this block whenever a blood sugar value is being logged or stated.
 
 CORE SOUTH ASIAN DIET KNOWLEDGE:
 - Understand whole-wheat bran roti vs refined naan/paratha, basmati rice glycemic load, daal protein & soluble fiber, sabzi preparation (bhindi, karela, palak, methi), dahi/yogurt benefits, and hidden sugars in mithai, sweet chai, or sharbat.
@@ -77,6 +77,181 @@ CRITICAL SAFETY BOUNDARIES:
 - You must NOT diagnose clinical conditions.
 - You must NOT prescribe medications (such as Metformin, Glimepiride, or Insulin) or recommend adjusting doses.
 - If the user mentions extreme symptoms (blood sugar > 300 or < 55 mg/dL, confusion, fainting, ketoacidosis, severe chest pain, vomiting), always advise consulting a doctor immediately.`;
+
+interface ExtractedReading {
+  sugar_mg_dl: number;
+  meal_tag: MealTag;
+  food_eaten: string | null;
+  notes: string | null;
+}
+
+function parseReadingFromText(
+  userText: string,
+  aiReplyText: string
+): ExtractedReading | null {
+  // 1. Try to find JSON action block in AI reply first (lenient regex covering json:action, json, or no language specifier)
+  const jsonActionRegex =
+    /```(?:json:action|json)?\s*(\{[\s\S]*?"type"\s*:\s*"log_reading"[\s\S]*?\})\s*```/i;
+  const match = aiReplyText.match(jsonActionRegex);
+  if (match) {
+    try {
+      const data = JSON.parse(match[1]);
+      const rawSugar = String(data.sugar_mg_dl || "").replace(/[^\d.]/g, "");
+      const sugar = Math.round(Number(rawSugar));
+      if (!isNaN(sugar) && sugar >= 40 && sugar <= 600) {
+        const validMealTags: MealTag[] = [
+          "fasting",
+          "before_meal",
+          "after_meal",
+          "bedtime",
+        ];
+        const mealTag: MealTag = validMealTags.includes(data.meal_tag)
+          ? data.meal_tag
+          : "after_meal";
+        return {
+          sugar_mg_dl: sugar,
+          meal_tag: mealTag,
+          food_eaten: data.food_eaten ? String(data.food_eaten).trim() : null,
+          notes: data.notes
+            ? String(data.notes).trim()
+            : "Logged via Aimmyy AI Assistant",
+        };
+      }
+    } catch {
+      // Continue to fallback
+    }
+  }
+
+  // Also check for raw un-fenced JSON object with "type":"log_reading"
+  const rawJsonMatch = aiReplyText.match(
+    /\{[\s\S]*?"type"\s*:\s*"log_reading"[\s\S]*?\}/
+  );
+  if (rawJsonMatch) {
+    try {
+      const data = JSON.parse(rawJsonMatch[0]);
+      const rawSugar = String(data.sugar_mg_dl || "").replace(/[^\d.]/g, "");
+      const sugar = Math.round(Number(rawSugar));
+      if (!isNaN(sugar) && sugar >= 40 && sugar <= 600) {
+        const validMealTags: MealTag[] = [
+          "fasting",
+          "before_meal",
+          "after_meal",
+          "bedtime",
+        ];
+        const mealTag: MealTag = validMealTags.includes(data.meal_tag)
+          ? data.meal_tag
+          : "after_meal";
+        return {
+          sugar_mg_dl: sugar,
+          meal_tag: mealTag,
+          food_eaten: data.food_eaten ? String(data.food_eaten).trim() : null,
+          notes: data.notes
+            ? String(data.notes).trim()
+            : "Logged via Aimmyy AI Assistant",
+        };
+      }
+    } catch {
+      // Continue to fallback
+    }
+  }
+
+  // 2. Check if the AI reply explicitly confirms it logged/recorded a reading
+  const aiConfirmRegex =
+    /(?:logged|recorded|noted|added)\s+(?:your\s+)?(?:fasting\s+|post-meal\s+|after[- ]meal\s+|before[- ]meal\s+|bedtime\s+)?(?:blood\s+)?(?:sugar|glucose|reading)?\s*(?:of\s+)?(?:\*\*)?(\d{2,3})(?:\*\*)?\s*mg\/?dl/i;
+  const aiConfirmMatch = aiReplyText.match(aiConfirmRegex);
+
+  // 3. Check user text for logging intent
+  const userTextLower = userText.toLowerCase();
+  const isQuestion =
+    /^(can|could|should|what|why|is it|how|when|where|does|will|if)\b/i.test(
+      userTextLower.trim()
+    ) &&
+    !/\b(log|record|add reading|track reading|save reading)\b/i.test(
+      userTextLower
+    );
+  if (isQuestion) {
+    return null;
+  }
+
+  const hasLogKeyword =
+    /\b(log|record|add reading|track reading|save reading|entered|my sugar is|sugar is|glucose is|reading is|reading of|tested|checked)\b/i.test(
+      userTextLower
+    );
+  const isDirectLogPattern =
+    /^(?:sugar|glucose|reading|fasting)?\s*[:=]?\s*\b([4-9]\d|[1-5]\d{2}|600)\b(?:\s*mg\/?dl)?(?:\s*(?:after|post|before|pre)?[- ]?(?:meal|lunch|dinner|breakfast|fasting|bedtime))?$/i.test(
+      userTextLower.trim()
+    );
+  const hasMealAndNumber =
+    /\b(?:after|post|before|pre)?[- ]?(?:meal|lunch|dinner|breakfast|fasting|bedtime)\s*[:=]?\s*(\b[4-9]\d\b|\b[1-5]\d{2}\b|\b600\b)\b/i.test(
+      userTextLower
+    ) ||
+    /\b(\b[4-9]\d\b|\b[1-5]\d{2}\b|\b600\b)\s*(?:mg\/?dl\s*)?(?:after|post|before|pre)?[- ]?(?:meal|lunch|dinner|breakfast|fasting|bedtime)\b/i.test(
+      userTextLower
+    );
+
+  if (
+    aiConfirmMatch ||
+    hasLogKeyword ||
+    isDirectLogPattern ||
+    hasMealAndNumber
+  ) {
+    let sugarVal: number | null = null;
+
+    if (aiConfirmMatch) {
+      sugarVal = parseInt(aiConfirmMatch[1], 10);
+    }
+
+    if (!sugarVal || isNaN(sugarVal)) {
+      const numMatch = userText.match(/\b([4-9]\d|[1-5]\d{2}|600)\b/);
+      if (numMatch) {
+        sugarVal = parseInt(numMatch[1], 10);
+      }
+    }
+
+    if (sugarVal && sugarVal >= 40 && sugarVal <= 600) {
+      let mealTag: MealTag = "after_meal";
+      const combined = `${userTextLower} ${aiReplyText.toLowerCase()}`;
+      if (
+        /\bfasting\b|\bmorning\b|\bsehri\b|\bempty stomach\b/.test(combined)
+      ) {
+        mealTag = "fasting";
+      } else if (
+        /\bbefore[- ]?(meal|lunch|dinner|breakfast)\b|\bpre[- ]?meal\b/.test(
+          combined
+        )
+      ) {
+        mealTag = "before_meal";
+      } else if (
+        /\bbedtime\b|\bnight\b|\bbefore bed\b|\bsleeping\b/.test(combined)
+      ) {
+        mealTag = "bedtime";
+      } else if (
+        /\bafter[- ]?(meal|lunch|dinner|breakfast)\b|\bpost[- ]?meal\b|\blunch\b|\bdinner\b|\bbreakfast\b/.test(
+          combined
+        )
+      ) {
+        mealTag = "after_meal";
+      }
+
+      let foodEaten: string | null = null;
+      const foodMatch = userText.match(
+        /\b(?:had|ate|eating|with|after having)\s+([^,.;\n]+)/i
+      );
+      if (foodMatch) {
+        foodEaten = foodMatch[1].trim();
+      }
+
+      return {
+        sugar_mg_dl: sugarVal,
+        meal_tag: mealTag,
+        food_eaten: foodEaten,
+        notes: "Logged via Aimmyy AI Assistant",
+      };
+    }
+  }
+
+  return null;
+}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -184,57 +359,57 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       maxTokens: AI_LIMITS.CHAT_MAX_TOKENS,
     });
 
-    // Detect and execute automatic reading logging if requested
+    // Detect and execute automatic reading logging if requested (via action block or direct intent)
     let cleanReply = reply;
     let newReading: SugarReading | null = null;
 
-    const actionMatch = reply.match(/```json:action\s*([\s\S]*?)\s*```/);
-    if (actionMatch) {
+    const extractedReading = parseReadingFromText(message, reply);
+
+    if (extractedReading) {
       try {
-        const actionData = JSON.parse(actionMatch[1]);
-        if (actionData.type === "log_reading" && actionData.sugar_mg_dl) {
-          const sugarValue = Math.round(Number(actionData.sugar_mg_dl));
-          if (sugarValue >= 40 && sugarValue <= 600) {
-            const validMealTags: MealTag[] = [
-              "fasting",
-              "before_meal",
-              "after_meal",
-              "bedtime",
-            ];
-            const mealTag: MealTag = validMealTags.includes(actionData.meal_tag)
-              ? actionData.meal_tag
-              : "after_meal";
+        const { data: inserted, error: insertError } = await supabase
+          .from("sugar_readings")
+          .insert([
+            {
+              user_id: user.id,
+              reading_date: new Date().toISOString(),
+              sugar_mg_dl: extractedReading.sugar_mg_dl,
+              meal_tag: extractedReading.meal_tag,
+              food_eaten: extractedReading.food_eaten,
+              notes: extractedReading.notes || "Logged via Aimmyy AI Assistant",
+            },
+          ])
+          .select()
+          .single();
 
-            const { data: inserted, error: insertError } = await supabase
-              .from("sugar_readings")
-              .insert([
-                {
-                  user_id: user.id,
-                  reading_date: new Date().toISOString(),
-                  sugar_mg_dl: sugarValue,
-                  meal_tag: mealTag,
-                  food_eaten: actionData.food_eaten
-                    ? String(actionData.food_eaten).trim()
-                    : null,
-                  notes: actionData.notes
-                    ? String(actionData.notes).trim()
-                    : "Recorded via Gluvia Assistant",
-                },
-              ])
-              .select()
-              .single();
-
-            if (!insertError && inserted) {
-              newReading = inserted as SugarReading;
-            }
-          }
+        if (insertError) {
+          console.error("Supabase insert error for AI logged reading:", insertError);
+        } else if (inserted) {
+          newReading = inserted as SugarReading;
+          console.log(
+            "Successfully logged reading via AI:",
+            newReading.sugar_mg_dl,
+            newReading.meal_tag
+          );
         }
-      } catch (parseErr) {
-        console.warn("Failed to parse AI action block:", parseErr);
+      } catch (insertErr) {
+        console.error("Exception inserting reading from AI:", insertErr);
       }
+    }
 
-      // Strip the action block so user sees only clean conversational text
-      cleanReply = reply.replace(/```json:action\s*[\s\S]*?\s*```/, "").trim();
+    // Strip any JSON action blocks from reply so user sees only clean conversational text
+    cleanReply = cleanReply
+      .replace(
+        /```(?:json:action|json)?\s*\{[\s\S]*?"type"\s*:\s*"log_reading"[\s\S]*?\}\s*```/gi,
+        ""
+      )
+      .replace(/\{[\s\S]*?"type"\s*:\s*"log_reading"[\s\S]*?\}/g, "")
+      .trim();
+
+    // If a reading was successfully inserted but the AI response didn't mention it, prepend confirmation
+    if (newReading && !/(?:logged|recorded|noted|added)/i.test(cleanReply)) {
+      const tagDisplay = newReading.meal_tag.replace("_", " ");
+      cleanReply = `I've logged your blood sugar reading of **${newReading.sugar_mg_dl} mg/dL** (${tagDisplay}) for you.\n\n${cleanReply}`;
     }
 
     return NextResponse.json({ reply: cleanReply, newReading });

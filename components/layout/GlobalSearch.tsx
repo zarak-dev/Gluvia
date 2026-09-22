@@ -565,7 +565,7 @@ export function GlobalSearch(): React.ReactElement {
           <div className="px-4 py-2 border-t border-[#E8EEF2] dark:border-border bg-[#F7FBFC]/50 dark:bg-muted/20 flex items-center justify-between text-[11px] text-[#718096] dark:text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Sparkles className="h-3 w-3 text-[#20B486]" />
-              AI Assistant powered by Aimmyy AI
+              AI Assistant Powered by Aimmyy AI
             </span>
             <span>Esc to close</span>
           </div>

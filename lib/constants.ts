@@ -53,7 +53,7 @@ export const TREND_PERIODS = {
 
 export const AI_LIMITS = {
   DIET_MAX_TOKENS: 1500,
-  CHAT_MAX_TOKENS: 1000,
+  CHAT_MAX_TOKENS: 1500,
   ANALYZE_MAX_TOKENS: 2000,
 } as const;
 
