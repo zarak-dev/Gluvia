@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Activity,
   Menu,
@@ -14,6 +15,8 @@ import {
   Trash2,
   Sparkles,
   HeartPulse,
+  ChevronRight,
+  Home,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,6 +37,15 @@ interface NotificationItem {
   unread: boolean;
   type: "glucose" | "diet" | "reminder";
 }
+
+const ROUTE_LABELS: Record<string, string> = {
+  "/dashboard": "Overview",
+  "/log": "Log Reading",
+  "/trends": "Trend Analysis",
+  "/diet": "AI Diet Plan",
+  "/foods": "Food Suggestions",
+  "/report": "Doctor Report",
+};
 
 const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
@@ -63,6 +75,7 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
 ];
 
 export function TopBar({ user }: TopBarProps): React.ReactElement {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isDark, setIsDark] = useState<boolean>(false);
@@ -77,6 +90,7 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
     : "ZK";
 
   const unreadCount = notifications.filter((n) => n.unread).length;
+  const currentRouteTitle = ROUTE_LABELS[pathname] ?? "Dashboard";
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -139,46 +153,53 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
     <>
       {/* Unified TopBar: Desktop & Mobile */}
       <header className="sticky top-0 z-20 flex h-16 md:h-20 w-full items-center justify-between border-b border-[#E8EEF2]/80 dark:border-border bg-[#F7FBFC]/90 dark:bg-background/90 px-4 sm:px-6 lg:px-8 backdrop-blur-md">
-        {/* Mobile Left: Drawer Menu & Brand */}
-        <div className="flex md:hidden items-center gap-3">
+        {/* Left Side: Mobile Drawer Toggle & Breadcrumbs across all routes */}
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Mobile Drawer Button */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen(true)}
             aria-label="Open navigation menu"
-            className="h-10 w-10 text-[#17324D] dark:text-foreground"
+            className="md:hidden h-10 w-10 text-[#17324D] dark:text-foreground shrink-0"
           >
             <Menu className="h-5 w-5" />
           </Button>
 
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 font-bold text-[#17324D] dark:text-foreground"
-            aria-label="Gluvia Dashboard"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
-              <Activity className="h-4 w-4" />
-            </div>
-            <span className="text-lg font-bold">Gluvia</span>
-          </Link>
+          {/* Dynamic Breadcrumbs */}
+          <nav aria-label="Breadcrumbs" className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-1.5 text-[#718096] dark:text-muted-foreground hover:text-[#17324D] dark:hover:text-foreground transition-colors"
+            >
+              <Home className="h-3.5 w-3.5 text-[#718096] dark:text-muted-foreground" />
+              <span>Dashboard</span>
+            </Link>
+
+            {pathname !== "/dashboard" && (
+              <>
+                <ChevronRight className="h-3.5 w-3.5 text-[#A0AEC0] dark:text-muted-foreground/50 shrink-0" />
+                <span className="font-semibold text-[#17324D] dark:text-foreground truncate max-w-[140px] sm:max-w-none">
+                  {currentRouteTitle}
+                </span>
+              </>
+            )}
+          </nav>
         </div>
 
-        {/* Desktop Search Bar (Screenshot Match) */}
-        <div className="hidden md:flex items-center flex-1 max-w-xl">
-          <div className="relative w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#718096] dark:text-muted-foreground" />
+        {/* Right Side: Search + Notifications + Theme Toggle + Avatar */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Desktop Search Bar (Moved to Right with Notification Icons) */}
+          <div className="relative w-36 sm:w-56 md:w-64 lg:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#718096] dark:text-muted-foreground pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search anything..."
-              className="h-11 w-full rounded-2xl bg-white dark:bg-card border border-[#E8EEF2] dark:border-border pl-11 pr-4 text-sm text-[#17324D] dark:text-foreground placeholder:text-[#718096] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#20B486]/30 transition-all shadow-[0_2px_8px_rgba(23,50,77,0.02)]"
+              placeholder="Search..."
+              className="h-10 w-full rounded-xl bg-white dark:bg-card border border-[#E8EEF2] dark:border-border pl-10 pr-3 text-xs sm:text-sm text-[#17324D] dark:text-foreground placeholder:text-[#718096] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#20B486]/30 transition-all shadow-[0_2px_8px_rgba(23,50,77,0.02)]"
             />
           </div>
-        </div>
-
-        {/* Right Controls: Notification & Settings / Avatar */}
-        <div className="flex items-center gap-3">
           {/* Notification Bell with Red Badge & Popover */}
           <div className="relative" ref={notificationRef}>
             <button
