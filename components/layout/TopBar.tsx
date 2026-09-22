@@ -46,6 +46,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/diet": "AI Diet Plan",
   "/foods": "Food Suggestions",
   "/report": "Doctor Report",
+  "/profile": "User Profile",
 };
 
 const INITIAL_NOTIFICATIONS: NotificationItem[] = [
@@ -303,11 +304,13 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
 
           {/* Mobile User Avatar */}
           <div className="md:hidden">
-            <Avatar className="h-9 w-9 border border-[#E8EEF2] dark:border-border">
-              <AvatarFallback className="bg-[#7190AB] text-white font-semibold text-xs">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <Link href="/profile" aria-label="View user profile">
+              <Avatar className="h-9 w-9 border border-[#E8EEF2] dark:border-border cursor-pointer hover:ring-2 hover:ring-[#20B486]/40 transition-all">
+                <AvatarFallback className="bg-[#7190AB] text-white font-semibold text-xs">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
         </div>
       </header>

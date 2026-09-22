@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Plus,
   Compass,
+  User,
 } from "lucide-react";
 
 import { useAppStore } from "@/store/useAppStore";
@@ -144,6 +145,13 @@ const APP_PAGES = [
     href: "/report",
     icon: FileText,
     keywords: "doctor report pdf clinical print export physician",
+  },
+  {
+    title: "User Profile & Settings",
+    subtitle: "Update username, change password, manage account",
+    href: "/profile",
+    icon: User,
+    keywords: "profile account password username logout user settings security",
   },
 ];
 

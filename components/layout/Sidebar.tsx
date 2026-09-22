@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, ChevronRight } from "lucide-react";
+import { Activity, ChevronRight, User, LogOut } from "lucide-react";
 
 import { NAV_LINKS } from "@/lib/constants";
 import { NavLink } from "@/components/layout/NavLink";
@@ -48,9 +48,13 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
           ))}
         </nav>
 
-        {/* User Profile & Logout Section (Screenshot Match) */}
+        {/* User Profile & Logout Section */}
         <div className="border-t border-[#E8EEF2] dark:border-border pt-4 px-1">
-          <div className="flex items-center justify-between rounded-xl p-2 transition-colors hover:bg-slate-50/80 dark:hover:bg-muted/40">
+          {/* Profile Card Link */}
+          <Link
+            href="/profile"
+            className="flex items-center justify-between rounded-xl p-2 transition-colors hover:bg-slate-100/80 dark:hover:bg-muted/50 group"
+          >
             <div className="flex items-center gap-3 min-w-0">
               <Avatar className="h-10 w-10 border border-[#E8EEF2] dark:border-border">
                 <AvatarFallback className="bg-[#7190AB] text-white font-semibold text-xs">
@@ -58,21 +62,28 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col min-w-0">
-                <span className="truncate text-sm font-semibold text-[#17324D] dark:text-foreground">
+                <span className="truncate text-sm font-semibold text-[#17324D] dark:text-foreground group-hover:text-primary transition-colors">
                   {user?.username ?? "Zarak Khan"}
                 </span>
-                <form action={logoutAction} className="inline">
-                  <button
-                    type="submit"
-                    className="text-xs text-[#718096] hover:text-destructive hover:underline text-left cursor-pointer"
-                  >
-                    Logout
-                  </button>
-                </form>
+                <span className="text-[11px] text-[#718096] dark:text-muted-foreground flex items-center gap-1">
+                  <User className="h-3 w-3 text-[#20B486]" />
+                  Manage profile
+                </span>
               </div>
             </div>
-            <ChevronRight className="h-4 w-4 text-[#718096] shrink-0" />
-          </div>
+            <ChevronRight className="h-4 w-4 text-[#718096] dark:text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+          </Link>
+
+          {/* Decent Sign Out Button */}
+          <form action={logoutAction} className="mt-2">
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-[#718096] dark:text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 bg-white dark:bg-card hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-[#E8EEF2] dark:border-border hover:border-rose-200 dark:hover:border-rose-900/50 shadow-2xs transition-all cursor-pointer active:scale-98"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Sign out</span>
+            </button>
+          </form>
 
           {/* Creator Attribution */}
           <div className="mt-3 pt-2 pb-1 text-center">
