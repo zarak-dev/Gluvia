@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Droplet, ChevronRight } from "lucide-react";
+import { Activity, ChevronRight } from "lucide-react";
 
 import { NAV_LINKS } from "@/lib/constants";
 import { NavLink } from "@/components/layout/NavLink";
@@ -46,8 +46,8 @@ export function MobileSidebar({
               onClick={handleLinkClick}
               className="flex items-center gap-3 font-bold tracking-tight"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
-                <Droplet className="h-5 w-5 fill-white" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+                <Activity className="h-5 w-5" />
               </div>
               <span className="text-xl font-bold tracking-tight text-[#17324D]">
                 Gluvia

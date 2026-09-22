@@ -71,8 +71,8 @@ export default function HomePage(): React.ReactElement {
             className="flex items-center gap-2.5 font-bold tracking-tight text-foreground transition-opacity hover:opacity-90"
             aria-label="Gluvia Home"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
-              <Droplet className="h-5 w-5 fill-white" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+              <Activity className="h-5 w-5" />
             </div>
             <span className="text-xl">Gluvia</span>
           </Link>

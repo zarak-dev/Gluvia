@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Droplet, ChevronRight } from "lucide-react";
+import { Activity, ChevronRight } from "lucide-react";
 
 import { NAV_LINKS } from "@/lib/constants";
 import { NavLink } from "@/components/layout/NavLink";
 import { logoutAction } from "@/app/actions/auth";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { UserProfile } from "@/types";
 
@@ -15,7 +16,7 @@ export interface SidebarProps {
 export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
   const initials = user?.username
     ? user.username.slice(0, 2).toUpperCase()
-    : "ZK";
+    : "GL";
 
   return (
     <aside
@@ -23,15 +24,15 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
         className ?? ""
       }`}
     >
-      {/* Brand Header with Green Droplet */}
+      {/* Brand Header with Activity Pulse */}
       <div className="flex h-20 shrink-0 items-center gap-3 px-6">
         <Link
           href="/dashboard"
           className="flex items-center gap-3 font-bold tracking-tight transition-opacity hover:opacity-90"
           aria-label="Gluvia Dashboard"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
-            <Droplet className="h-5 w-5 fill-white" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+            <Activity className="h-5 w-5" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#17324D]">
             Gluvia

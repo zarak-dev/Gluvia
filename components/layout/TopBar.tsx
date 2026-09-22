@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Droplet, Menu, Search, Bell, Sun } from "lucide-react";
+import { Activity, Menu, Search, Bell, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -42,8 +42,8 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
             className="flex items-center gap-2 font-bold text-[#17324D]"
             aria-label="Gluvia Dashboard"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
-              <Droplet className="h-4 w-4 fill-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+              <Activity className="h-4 w-4" />
             </div>
             <span className="text-lg font-bold">Gluvia</span>
           </Link>
