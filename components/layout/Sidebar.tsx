@@ -31,7 +31,7 @@ export function Sidebar({ user, className }: SidebarProps): React.ReactElement {
           className="flex items-center gap-3 font-bold tracking-tight transition-opacity hover:opacity-90"
           aria-label="Gluvia Dashboard"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
             <Activity className="h-5 w-5" />
           </div>
           <span className="text-xl font-bold tracking-tight text-[#17324D]">

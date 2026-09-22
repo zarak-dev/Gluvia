@@ -34,7 +34,7 @@ export default function RegisterPage(): React.ReactElement {
 
           {/* Top Brand Identity */}
           <div className="relative z-10 flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-md">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-md">
               <Activity className="h-6 w-6" />
             </div>
             <div>
@@ -75,7 +75,7 @@ export default function RegisterPage(): React.ReactElement {
                 className="flex items-center gap-2 transition-transform hover:scale-105"
                 aria-label="Gluvia Home"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-md">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-md">
                   <Activity className="h-5 w-5" />
                 </div>
                 <span className="text-2xl font-bold tracking-tight text-foreground">
