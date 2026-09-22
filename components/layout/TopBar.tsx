@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
+import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import type { UserProfile } from "@/types";
 
 export interface TopBarProps {
@@ -77,7 +78,6 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
 export function TopBar({ user }: TopBarProps): React.ReactElement {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isDark, setIsDark] = useState<boolean>(false);
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [notifications, setNotifications] =
@@ -187,19 +187,10 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
           </nav>
         </div>
 
-        {/* Right Side: Search + Notifications + Theme Toggle + Avatar */}
+        {/* Right Side: Global Search + Notifications + Theme Toggle + Avatar */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {/* Desktop Search Bar (Moved to Right with Notification Icons) */}
-          <div className="relative w-36 sm:w-56 md:w-64 lg:w-72">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#718096] dark:text-muted-foreground pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="h-10 w-full rounded-xl bg-white dark:bg-card border border-[#E8EEF2] dark:border-border pl-10 pr-3 text-xs sm:text-sm text-[#17324D] dark:text-foreground placeholder:text-[#718096] dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#20B486]/30 transition-all shadow-[0_2px_8px_rgba(23,50,77,0.02)]"
-            />
-          </div>
+          {/* Global Search (searches throughout the entire app) */}
+          <GlobalSearch />
           {/* Notification Bell with Red Badge & Popover */}
           <div className="relative" ref={notificationRef}>
             <button
