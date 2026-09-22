@@ -11,7 +11,7 @@ const PROTECTED_ROUTES = [
   "/api/ai",
 ];
 
-const AUTH_ROUTES = ["/login", "/register"];
+const AUTH_ROUTES = ["/login", "/register", "/forgot-password"];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const supabaseResponse = NextResponse.next({ request });
