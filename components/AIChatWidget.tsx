@@ -10,7 +10,10 @@ import {
   User,
   Loader2,
   Sparkles,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { useAppStore } from "@/store/useAppStore";
 import { average } from "@/lib/utils";
@@ -20,12 +23,47 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { ChatMessage } from "@/types";
 
+interface SpeechRecognitionResultItem {
+  transcript: string;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionResultItem;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionEvent {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+
+interface ISpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
 export function AIChatWidget(): React.ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
   const [lastFailedText, setLastFailedText] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState<boolean>(false);
 
   const chatMessages = useAppStore((state) => state.chatMessages);
   const addMessage = useAppStore((state) => state.addMessage);
@@ -34,6 +72,8 @@ export function AIChatWidget(): React.ReactElement {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const baseTextRef = useRef<string>("");
 
   // Auto-scroll to bottom on new message
   useEffect(() => {
@@ -62,6 +102,99 @@ export function AIChatWidget(): React.ReactElement {
     window.addEventListener("open-ai-chat", handleOpenChat);
     return () => window.removeEventListener("open-ai-chat", handleOpenChat);
   }, []);
+
+  // Cleanup speech recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    };
+  }, []);
+
+  const toggleListening = () => {
+    const win =
+      typeof window !== "undefined"
+        ? (window as unknown as {
+            SpeechRecognition?: new () => ISpeechRecognition;
+            webkitSpeechRecognition?: new () => ISpeechRecognition;
+          })
+        : null;
+
+    const SpeechRecognitionClass =
+      win?.SpeechRecognition || win?.webkitSpeechRecognition;
+
+    if (!SpeechRecognitionClass) {
+      toast.error(
+        "Voice input is not supported by your browser. Please try Chrome, Edge, or Safari."
+      );
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognitionClass();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      baseTextRef.current = inputMessage.trim();
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let interimTranscript = "";
+        let finalTranscript = "";
+
+        for (let i = 0; i < event.results.length; i++) {
+          const transcript = event.results[i][0]?.transcript || "";
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + " ";
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        const combined = (finalTranscript + interimTranscript).trim();
+        const base = baseTextRef.current;
+        setInputMessage(base ? `${base} ${combined}` : combined);
+      };
+
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+        console.warn("Speech recognition error:", event.error);
+        if (event.error === "not-allowed") {
+          toast.error(
+            "Microphone access was denied. Please allow microphone permissions."
+          );
+        } else if (event.error !== "no-speech") {
+          toast.error(`Voice input error: ${event.error}`);
+        }
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+      setIsListening(true);
+      toast.info("Listening... Speak now");
+    } catch (err) {
+      console.warn("Failed to start voice recognition:", err);
+      toast.error("Could not start voice recognition. Please try again.");
+      setIsListening(false);
+    }
+  };
 
   const handleSendMessage = async (
     e?: React.FormEvent,
@@ -304,25 +437,74 @@ export function AIChatWidget(): React.ReactElement {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* In-listening recording banner */}
+          {isListening && (
+            <div className="px-3 py-1.5 bg-rose-50 dark:bg-rose-950/40 border-t border-rose-200 dark:border-rose-900/50 flex items-center justify-between text-[11px] text-rose-600 dark:text-rose-400 animate-in fade-in duration-150 shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
+                </span>
+                <span>Listening... Speak now</span>
+              </div>
+              <button
+                type="button"
+                onClick={toggleListening}
+                className="font-semibold underline hover:text-rose-700 dark:hover:text-rose-300 cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          )}
+
           {/* Input Footer */}
           <form
-            onSubmit={handleSendMessage}
+            onSubmit={(e) => {
+              if (isListening && recognitionRef.current) {
+                recognitionRef.current.stop();
+                setIsListening(false);
+              }
+              handleSendMessage(e);
+            }}
             className="p-2.5 border-t bg-card flex items-center gap-2 shrink-0"
           >
-            <Input
-              ref={inputRef}
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask about South Asian foods, sugar..."
-              disabled={isSending}
-              className="h-9 text-xs focus-visible:ring-1"
-            />
+            <div className="relative flex-1">
+              <Input
+                ref={inputRef}
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                placeholder={
+                  isListening
+                    ? "Listening... speak now"
+                    : "Ask about South Asian foods, sugar..."
+                }
+                disabled={isSending}
+                className="h-9 text-xs focus-visible:ring-1 pr-9"
+              />
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-6 w-6 rounded-md flex items-center justify-center transition-all cursor-pointer ${
+                  isListening
+                    ? "bg-rose-500 text-white animate-pulse shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+                title={isListening ? "Stop listening" : "Voice input"}
+                aria-label={isListening ? "Stop listening" : "Start voice input"}
+              >
+                {isListening ? (
+                  <MicOff className="h-3.5 w-3.5" />
+                ) : (
+                  <Mic className="h-3.5 w-3.5" />
+                )}
+              </button>
+            </div>
             <Button
               type="submit"
               size="icon"
               disabled={!inputMessage.trim() || isSending}
               aria-label="Send message"
-              className="h-9 w-9 shrink-0"
+              className="h-9 w-9 shrink-0 cursor-pointer"
             >
               <Send className="h-4 w-4" />
             </Button>
