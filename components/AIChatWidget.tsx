@@ -25,6 +25,7 @@ export function AIChatWidget(): React.ReactElement {
   const [inputMessage, setInputMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
+  const [lastFailedText, setLastFailedText] = useState<string | null>(null);
 
   const chatMessages = useAppStore((state) => state.chatMessages);
   const addMessage = useAppStore((state) => state.addMessage);
@@ -48,21 +49,29 @@ export function AIChatWidget(): React.ReactElement {
     return () => clearTimeout(timerId);
   }, [isOpen]);
 
-  const handleSendMessage = async (e?: React.FormEvent): Promise<void> => {
+  const handleSendMessage = async (
+    e?: React.FormEvent,
+    overrideText?: string
+  ): Promise<void> => {
     if (e) e.preventDefault();
-    const text = inputMessage.trim();
+    const text = (overrideText ?? inputMessage).trim();
     if (!text || isSending) return;
 
     setErrorBanner(null);
-    setInputMessage("");
+    setLastFailedText(null);
+    if (!overrideText) {
+      setInputMessage("");
+    }
 
-    const userMessage: ChatMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content: text,
-      timestamp: new Date().toISOString(),
-    };
-    addMessage(userMessage);
+    if (!overrideText) {
+      const userMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: text,
+        timestamp: new Date().toISOString(),
+      };
+      addMessage(userMessage);
+    }
 
     // Compute patient context from store readings
     const lastReading = readings.length > 0 ? readings[0].sugar_mg_dl : null;
@@ -109,6 +118,7 @@ export function AIChatWidget(): React.ReactElement {
       const msg =
         err instanceof Error ? err.message : "Error contacting assistant";
       setErrorBanner(msg);
+      setLastFailedText(text);
     } finally {
       setIsSending(false);
     }
@@ -235,22 +245,40 @@ export function AIChatWidget(): React.ReactElement {
               );
             })}
 
-            {/* Typing indicator */}
+            {/* In-Chat Animated Typing Indicator */}
             {isSending && (
-              <div className="flex items-center gap-2 text-muted-foreground pt-1">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div
+                className="flex items-center gap-2 text-muted-foreground pt-1"
+                role="status"
+                aria-live="polite"
+                aria-label="Gluvia Assistant is typing"
+              >
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary mt-0.5">
                   <Bot className="h-3.5 w-3.5" />
                 </div>
-                <div className="rounded-xl border bg-card px-3 py-2 text-xs flex items-center gap-1.5">
-                  <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                  <span>Gluvia is thinking...</span>
+                <div className="rounded-xl border bg-card text-card-foreground px-3.5 py-2 text-xs shadow-xs rounded-tl-none flex items-center gap-1.5">
+                  <span className="sr-only">Gluvia is thinking...</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" />
                 </div>
               </div>
             )}
 
             {errorBanner && (
-              <Alert variant="destructive" className="py-2 text-xs">
-                <AlertDescription>{errorBanner}</AlertDescription>
+              <Alert variant="destructive" className="py-2 text-xs flex items-center justify-between">
+                <AlertDescription className="flex-1">{errorBanner}</AlertDescription>
+                {lastFailedText && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 text-xs underline hover:bg-destructive/20 ml-2 shrink-0"
+                    onClick={() => handleSendMessage(undefined, lastFailedText)}
+                  >
+                    Retry
+                  </Button>
+                )}
               </Alert>
             )}
 

@@ -233,6 +233,7 @@ export function RecentReadings({
               type="button"
               variant="destructive"
               disabled={isDeleting}
+              aria-busy={isDeleting}
               onClick={handleDeleteConfirm}
             >
               {isDeleting ? (

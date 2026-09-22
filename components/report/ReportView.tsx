@@ -227,6 +227,7 @@ export function ReportView({
           <Button
             onClick={handleGenerateAnalysis}
             disabled={isAnalyzing || readings.length === 0}
+            aria-busy={isAnalyzing}
             variant="outline"
             className="gap-2 shadow-xs"
           >
@@ -246,6 +247,7 @@ export function ReportView({
           <Button
             onClick={handleDownloadPDF}
             disabled={isGeneratingPDF || readings.length === 0}
+            aria-busy={isGeneratingPDF}
             className="gap-2 shadow-sm"
           >
             {isGeneratingPDF ? (

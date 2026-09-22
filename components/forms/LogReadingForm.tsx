@@ -181,7 +181,12 @@ export function LogReadingForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4"
+      noValidate
+      aria-busy={isSubmitting}
+    >
       {serverError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -352,7 +357,12 @@ export function LogReadingForm({
             Cancel
           </Button>
         )}
-        <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          aria-busy={isSubmitting}
+          className="min-w-[120px]"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

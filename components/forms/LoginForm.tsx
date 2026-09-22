@@ -58,7 +58,12 @@ export function LoginForm(): React.ReactElement {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4"
+      noValidate
+      aria-busy={isSubmitting}
+    >
       {serverError && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -108,7 +113,12 @@ export function LoginForm(): React.ReactElement {
         )}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className="w-full font-medium"
+        disabled={isSubmitting}
+        aria-busy={isSubmitting}
+      >
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

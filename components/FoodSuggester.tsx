@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   SUGAR_STATE_LABELS,
   TIME_LABELS,
@@ -357,11 +358,38 @@ export function FoodSuggester(): React.ReactElement {
 
       {/* Results Grid */}
       {isLoading ? (
-        <div className="flex h-48 items-center justify-center rounded-xl border bg-card">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-            Filtering glycemic food pairings...
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 animate-in fade-in-50 duration-200" aria-busy="true" aria-label="Loading food suggestions">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card
+              key={i}
+              className="shadow-sm flex flex-col justify-between p-5 space-y-4"
+            >
+              <div className="space-y-2">
+                <div className="flex items-start justify-between gap-2">
+                  <Skeleton className="h-5 w-48" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-3.5 w-36" />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({ length: 6 }).map((_, j) => (
+                  <div
+                    key={j}
+                    className="rounded-md bg-muted/40 p-2 space-y-1 text-center"
+                  >
+                    <Skeleton className="h-2.5 w-10 mx-auto" />
+                    <Skeleton className="h-4 w-8 mx-auto" />
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-1.5 pt-1">
+                <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                <Skeleton className="h-3 w-56" />
+              </div>
+            </Card>
+          ))}
         </div>
       ) : foods.length === 0 ? (
         <div className="flex h-56 flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center bg-card">

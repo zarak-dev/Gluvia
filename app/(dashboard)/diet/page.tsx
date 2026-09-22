@@ -308,6 +308,7 @@ export default function DietPage(): React.ReactElement {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
+                  aria-busy={isSubmitting}
                   className="w-full gap-2 mt-2"
                 >
                   {isSubmitting ? (
@@ -365,8 +366,8 @@ export default function DietPage(): React.ReactElement {
 
         {/* Display Area: Loading Skeleton or DietPlanCard */}
         <div className="lg:col-span-7">
-          {isSubmitting ? (
-            <div className="space-y-4">
+          {isSubmitting || (isLoadingPast && !currentPlan) ? (
+            <div className="space-y-4" aria-busy="true" aria-label="Loading diet plan">
               <Card className="p-6">
                 <div className="space-y-3">
                   <Skeleton className="h-6 w-3/4" />
