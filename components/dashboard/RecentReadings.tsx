@@ -124,83 +124,123 @@ export function RecentReadings({
         </Alert>
       )}
 
-      {/* Desktop & Tablet Table (horizontally scrollable on small screens) */}
-      <div className="rounded-lg border bg-card shadow-sm overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="w-[180px]">Date & Time</TableHead>
-              <TableHead className="w-[140px]">Glucose</TableHead>
-              <TableHead className="w-[140px]">Meal Tag</TableHead>
-              <TableHead>Food Eaten</TableHead>
-              <TableHead>Notes</TableHead>
-              <TableHead className="w-[70px] text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {readings.slice(0, 10).map((reading) => {
-              const level = getSugarLevel(reading.sugar_mg_dl);
-              const formattedDate = formatDate(reading.reading_date);
-              const timeString = new Date(
-                reading.reading_date
-              ).toLocaleTimeString("en-PK", {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+      {/* Recent Readings Card (Screenshot Match) */}
+      <div className="rounded-2xl border border-[#E8EEF2] bg-white p-5 sm:p-6 shadow-[0_2px_12px_rgba(23,50,77,0.02)]">
+        <div className="flex items-center justify-between pb-4">
+          <h2 className="text-base sm:text-lg font-bold text-[#17324D]">
+            Recent Readings
+          </h2>
+          <Link
+            href="/log"
+            className="text-xs font-semibold text-[#20B486] hover:underline"
+          >
+            View all
+          </Link>
+        </div>
 
-              return (
-                <TableRow key={reading.id}>
-                  <TableCell className="font-medium text-xs sm:text-sm">
-                    <div>{formattedDate}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {timeString}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-bold">
-                        {reading.sugar_mg_dl}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        mg/dL
-                      </span>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-[#E8EEF2]/80 hover:bg-transparent">
+                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                  Date & Time
+                </TableHead>
+                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                  Sugar Level
+                </TableHead>
+                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                  Meal Tag
+                </TableHead>
+                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                  Food
+                </TableHead>
+                <TableHead className="text-xs font-medium text-[#718096] h-9 text-right">
+                  Action
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {readings.slice(0, 7).map((reading) => {
+                const level = getSugarLevel(reading.sugar_mg_dl);
+                const formattedDate = formatDate(reading.reading_date);
+                const timeString = new Date(
+                  reading.reading_date
+                ).toLocaleTimeString("en-PK", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return (
+                  <TableRow
+                    key={reading.id}
+                    className="border-b border-[#E8EEF2]/60 hover:bg-[#F7FBFC]/60 transition-colors"
+                  >
+                    <TableCell className="py-3 text-xs">
+                      <div className="font-semibold text-[#17324D]">
+                        {formattedDate}
+                      </div>
+                      <div className="text-[11px] text-[#718096]">
+                        {timeString}
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="py-3">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "h-2 w-2 rounded-full shrink-0",
+                            level === "normal" && "bg-[#20B486]",
+                            level === "elevated" && "bg-[#F59E0B]",
+                            level === "high" && "bg-[#EF4444]",
+                            level === "low" && "bg-[#F97316]"
+                          )}
+                        />
+                        <span className="text-xs font-semibold text-[#17324D]">
+                          {reading.sugar_mg_dl} mg/dL
+                        </span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="py-3">
                       <span
                         className={cn(
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold",
-                          getSugarBadgeClass(level)
+                          "inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium",
+                          reading.meal_tag === "fasting" &&
+                            "bg-[#F3E8FF] text-[#7C3AED]",
+                          reading.meal_tag === "before_meal" &&
+                            "bg-[#FFF4E5] text-[#D97706]",
+                          reading.meal_tag === "after_meal" &&
+                            "bg-[#E8F3FF] text-[#2563EB]",
+                          reading.meal_tag === "bedtime" &&
+                            "bg-[#F1F5F9] text-[#475569]"
                         )}
                       >
-                        {SUGAR_LEVEL_LABELS[level]}
+                        {MEAL_TAG_LABELS[reading.meal_tag]}
                       </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      {MEAL_TAG_LABELS[reading.meal_tag]}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm max-w-[200px] truncate text-muted-foreground">
-                    {reading.food_eaten || "—"}
-                  </TableCell>
-                  <TableCell className="text-sm max-w-[200px] truncate text-muted-foreground">
-                    {reading.notes || "—"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setReadingToDelete(reading)}
-                      aria-label={`Delete reading from ${formattedDate}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                    </TableCell>
+
+                    <TableCell className="py-3 text-xs text-[#5A6A80] max-w-[150px] truncate">
+                      {reading.food_eaten || "—"}
+                    </TableCell>
+
+                    <TableCell className="py-3 text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-[#718096] hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                        onClick={() => setReadingToDelete(reading)}
+                        aria-label={`Delete reading from ${formattedDate}`}
+                        title="Delete reading"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {/* Delete Confirmation Dialog */}

@@ -9,77 +9,122 @@ import type { SugarLevel, TrendDirection } from "@/types";
 export interface StatCardProps {
   title: string;
   value: string | number;
-  subtitle: string;
+  unit?: string;
+  subtitle?: string;
   level?: SugarLevel;
   trend?: TrendDirection;
+  trendPercent?: string;
   icon?: LucideIcon;
+  iconBg?: string;
+  iconColor?: string;
   className?: string;
 }
 
 export function StatCard({
   title,
   value,
+  unit,
   subtitle,
   level,
   trend,
+  trendPercent,
   icon: Icon,
+  iconBg,
+  iconColor,
   className,
 }: StatCardProps): React.ReactElement {
+  // Determine squircle container colors if not explicitly passed
+  let resolvedBg = iconBg ?? "bg-[#DDF7ED]";
+  let resolvedColor = iconColor ?? "text-[#20B486]";
+
+  if (!iconBg) {
+    if (title.toLowerCase().includes("average")) {
+      resolvedBg = "bg-[#E8F3FF]";
+      resolvedColor = "text-[#3B82F6]";
+    } else if (title.toLowerCase().includes("trend")) {
+      resolvedBg = "bg-[#F3E8FF]";
+      resolvedColor = "text-[#8B5CF6]";
+    } else if (title.toLowerCase().includes("total")) {
+      resolvedBg = "bg-[#FEF3C7]";
+      resolvedColor = "text-[#F59E0B]";
+    }
+  }
+
   return (
     <Card
       className={cn(
-        "overflow-hidden transition-shadow hover:shadow-md",
+        "rounded-2xl border border-[#E8EEF2] bg-white p-5 shadow-[0_2px_12px_rgba(23,50,77,0.02)] transition-shadow hover:shadow-md flex flex-col justify-between",
         className
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
+      <CardHeader className="p-0 pb-3 flex flex-row items-center justify-between space-y-0">
         {Icon && (
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
-            <Icon className="h-4 w-4" aria-hidden="true" />
+          <div
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-2xl shadow-2xs",
+              resolvedBg,
+              resolvedColor
+            )}
+          >
+            <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
         )}
       </CardHeader>
-      <CardContent className="space-y-1.5">
-        <div className="flex items-baseline gap-2">
-          <span
-            className={cn(
-              "text-3xl font-bold tracking-tight",
-              level ? getSugarColorClass(level) : "text-foreground"
-            )}
-          >
+
+      <CardContent className="p-0 space-y-1.5">
+        <p className="text-xs sm:text-sm font-medium text-[#718096]">
+          {title}
+        </p>
+
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-2xl sm:text-3xl font-bold tracking-tight text-[#17324D]">
             {value}
           </span>
-          {level && (
-            <span
-              className={cn(
-                "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-                getSugarBadgeClass(level)
-              )}
-            >
-              {SUGAR_LEVEL_LABELS[level]}
+          {unit && (
+            <span className="text-xs sm:text-sm font-semibold text-[#718096]">
+              {unit}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          {trend && (
+        {/* Status Badge / Subtitle row */}
+        <div className="pt-1 flex items-center gap-2">
+          {level ? (
             <span
               className={cn(
-                "inline-flex items-center gap-1 font-medium",
-                trend === "up" && "text-sugar-high",
-                trend === "down" && "text-sugar-low",
-                trend === "stable" && "text-muted-foreground"
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                level === "normal" && "bg-[#DDF7ED] text-[#20B486]",
+                level === "elevated" && "bg-[#FFF4E5] text-[#D97706]",
+                level === "high" && "bg-[#FEE2E2] text-[#EF4444]",
+                level === "low" && "bg-[#FEF3C7] text-[#B45309]"
               )}
             >
-              {trend === "up" && <TrendingUp className="h-3.5 w-3.5" />}
-              {trend === "down" && <TrendingDown className="h-3.5 w-3.5" />}
-              {trend === "stable" && <Minus className="h-3.5 w-3.5" />}
+              <span className="h-1.5 w-1.5 rounded-full bg-current" />
+              <span>{SUGAR_LEVEL_LABELS[level]}</span>
             </span>
-          )}
-          <span>{subtitle}</span>
+          ) : trendPercent ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#F3E8FF] text-[#8B5CF6] px-2.5 py-0.5 text-xs font-semibold">
+              <span>{trendPercent}</span>
+            </span>
+          ) : trend ? (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                trend === "up" && "bg-[#FEE2E2] text-[#EF4444]",
+                trend === "down" && "bg-[#DDF7ED] text-[#20B486]",
+                trend === "stable" && "bg-[#F3E8FF] text-[#8B5CF6]"
+              )}
+            >
+              {trend === "up" && <TrendingUp className="h-3 w-3" />}
+              {trend === "down" && <TrendingDown className="h-3 w-3" />}
+              {trend === "stable" && <Minus className="h-3 w-3" />}
+              <span className="capitalize">{trend}</span>
+            </span>
+          ) : subtitle ? (
+            <span className="text-xs text-[#718096] font-normal">
+              {subtitle}
+            </span>
+          ) : null}
         </div>
       </CardContent>
     </Card>

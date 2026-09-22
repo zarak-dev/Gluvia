@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { Activity, ShieldCheck, Sparkles } from "lucide-react";
+import { Droplet, ShieldCheck, Sparkles } from "lucide-react";
 
 import { RegisterForm } from "@/components/forms/RegisterForm";
 
@@ -21,7 +21,7 @@ export default function RegisterPage(): React.ReactElement {
           <div className="absolute inset-0 z-0">
             <Image
               src="/images/auth-medical.jpg"
-              alt="Clinical equipment with stethoscope, medical clipboard, and keyboard for diabetes tracking"
+              alt="Clinical digital tablet with medical diagnostic scans, stethoscope, and healthcare equipment"
               fill
               priority
               sizes="(min-width: 1024px) 45vw, 100vw"
@@ -34,8 +34,8 @@ export default function RegisterPage(): React.ReactElement {
 
           {/* Top Brand Identity */}
           <div className="relative z-10 flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
-              <Activity className="h-6 w-6" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-md">
+              <Droplet className="h-6 w-6 fill-white" />
             </div>
             <div>
               <span className="text-xl font-bold tracking-tight text-foreground block">
@@ -75,8 +75,8 @@ export default function RegisterPage(): React.ReactElement {
                 className="flex items-center gap-2 transition-transform hover:scale-105"
                 aria-label="Gluvia Home"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
-                  <Activity className="h-5 w-5" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-md">
+                  <Droplet className="h-5 w-5 fill-white" />
                 </div>
                 <span className="text-2xl font-bold tracking-tight text-foreground">
                   Gluvia

@@ -47,14 +47,20 @@ export function NavLink({
       onClick={onClick}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+        "flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors",
         isActive
-          ? "bg-primary text-primary-foreground shadow-sm"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+          ? "bg-[#E6F7F0] text-[#20B486] font-semibold"
+          : "text-[#5A6A80] hover:bg-[#F7FBFC] hover:text-[#17324D]",
         className
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+      <Icon
+        className={cn(
+          "h-4 w-4 shrink-0 transition-colors",
+          isActive ? "text-[#20B486]" : "text-[#718096]"
+        )}
+        aria-hidden="true"
+      />
       <span>{label}</span>
     </Link>
   );

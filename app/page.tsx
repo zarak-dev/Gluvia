@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Activity,
   ArrowRight,
   ClipboardList,
+  Droplet,
   TrendingUp,
   Utensils,
   FileText,
@@ -22,7 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Gluvia — South Asian Diabetes Management",
+  title: "Gluvia",
   description:
     "Your daily diabetes companion, built for South Asian lifestyles. Track blood glucose, observe trends, and manage metabolic health.",
 };
@@ -69,8 +71,8 @@ export default function HomePage(): React.ReactElement {
             className="flex items-center gap-2.5 font-bold tracking-tight text-foreground transition-opacity hover:opacity-90"
             aria-label="Gluvia Home"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-              <Activity className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#20B486] to-[#3DD5A3] text-white shadow-xs">
+              <Droplet className="h-5 w-5 fill-white" />
             </div>
             <span className="text-xl">Gluvia</span>
           </Link>
@@ -88,15 +90,30 @@ export default function HomePage(): React.ReactElement {
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="container px-4 py-16 text-center sm:py-24 sm:px-8 lg:py-28">
-          <div className="mx-auto max-w-3xl space-y-6">
-            <Badge
-              variant="secondary"
-              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium"
-            >
-              <Heart className="h-3.5 w-3.5 text-primary" />
-              Tailored for South Asian Glycemic Health
-            </Badge>
+        <section className="relative overflow-hidden border-b py-16 text-center sm:py-24 sm:px-8 lg:py-28">
+          {/* Background Medical Visual with subtle soft gradient overlay */}
+          <div className="absolute inset-0 -z-10 pointer-events-none">
+            <Image
+              src="/images/landing-clipboard.jpg"
+              alt="Clinical workspace with clipboard, keyboard, and stethoscope"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center opacity-35 dark:opacity-20"
+              quality={90}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
+          </div>
+
+          <div className="container relative z-10 px-4">
+            <div className="mx-auto max-w-3xl space-y-6">
+              <Badge
+                variant="secondary"
+                className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium"
+              >
+                <Heart className="h-3.5 w-3.5 text-primary" />
+                Tailored for South Asian Glycemic Health
+              </Badge>
 
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
               Gluvia
@@ -130,7 +147,8 @@ export default function HomePage(): React.ReactElement {
               </Button>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Feature Cards Section */}
         <section className="border-t bg-muted/20 py-16 sm:py-20">

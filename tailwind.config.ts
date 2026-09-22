@@ -60,6 +60,24 @@ const config: Config = {
           elevated: "hsl(var(--sugar-elevated))",
           high: "hsl(var(--sugar-high))",
         },
+        brand: {
+          50: "#E6F7F0",
+          100: "#DDF7ED",
+          500: "#20B486",
+          600: "#1A9E75",
+        },
+        pastel: {
+          green: "#DDF7ED",
+          cyan: "#DDF7FA",
+          blue: "#E8F3FF",
+          purple: "#F3E8FF",
+          amber: "#FEF3C7",
+        },
+        slate: {
+          dark: "#17324D",
+          muted: "#718096",
+          light: "#E8EEF2",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
