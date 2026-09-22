@@ -90,19 +90,19 @@ export default function HomePage(): React.ReactElement {
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="relative overflow-hidden border-b py-16 text-center sm:py-24 sm:px-8 lg:py-28">
+        <section className="relative isolate overflow-hidden border-b py-16 text-center sm:py-24 sm:px-8 lg:py-28">
           {/* Background Medical Visual with subtle soft gradient overlay */}
-          <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="absolute inset-0 z-0 pointer-events-none">
             <Image
               src="/images/landing-clipboard.jpg"
               alt="Clinical workspace with clipboard, keyboard, and stethoscope"
               fill
               priority
               sizes="100vw"
-              className="object-cover object-center opacity-35 dark:opacity-20"
-              quality={90}
+              className="object-cover object-center opacity-90 dark:opacity-30"
+              quality={95}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/70 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/25 via-background/40 to-background" />
           </div>
 
           <div className="container relative z-10 px-4">
