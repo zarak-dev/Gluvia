@@ -13,6 +13,7 @@ import {
   Mic,
   MicOff,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { useAppStore } from "@/store/useAppStore";
@@ -21,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { ChatMessage } from "@/types";
+import type { ChatMessage, SugarReading } from "@/types";
 
 interface SpeechRecognitionResultItem {
   transcript: string;
@@ -58,6 +59,7 @@ interface ISpeechRecognition {
 }
 
 export function AIChatWidget(): React.ReactElement {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -69,6 +71,7 @@ export function AIChatWidget(): React.ReactElement {
   const addMessage = useAppStore((state) => state.addMessage);
   const clearMessages = useAppStore((state) => state.clearMessages);
   const readings = useAppStore((state) => state.readings);
+  const addReading = useAppStore((state) => state.addReading);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -253,7 +256,7 @@ export function AIChatWidget(): React.ReactElement {
         throw new Error(errObj.message || "Failed to reach AI assistant");
       }
 
-      const resObj = data as { reply: string };
+      const resObj = data as { reply: string; newReading?: SugarReading };
       const assistantMessage: ChatMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -261,6 +264,18 @@ export function AIChatWidget(): React.ReactElement {
         timestamp: new Date().toISOString(),
       };
       addMessage(assistantMessage);
+
+      // If a reading was automatically recorded by the assistant (via typing or voice)
+      if (resObj.newReading) {
+        addReading(resObj.newReading);
+        const tagDisplay = resObj.newReading.meal_tag
+          ? resObj.newReading.meal_tag.replace("_", " ")
+          : "reading";
+        toast.success(
+          `Logged ${resObj.newReading.sugar_mg_dl} mg/dL (${tagDisplay}) automatically!`
+        );
+        router.refresh();
+      }
     } catch (err: unknown) {
       const msg =
         err instanceof Error ? err.message : "Error contacting assistant";
