@@ -94,6 +94,16 @@ export function MobileSidebar({
               </div>
               <ChevronRight className="h-4 w-4 text-[#718096] shrink-0" />
             </div>
+
+            {/* Creator Attribution */}
+            <div className="mt-3 pt-2 pb-1 text-center">
+              <p className="text-[10px] text-[#718096] tracking-tight">
+                Designed & Engineered by{" "}
+                <span className="font-semibold text-[#17324D]">
+                  Zarak K.
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </SheetContent>

@@ -222,8 +222,12 @@ export default function HomePage(): React.ReactElement {
 
       {/* Footer */}
       <footer className="border-t py-8 text-center text-sm text-muted-foreground">
-        <div className="container px-4 sm:px-8">
+        <div className="container px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <p>© {new Date().getFullYear()} Gluvia. All rights reserved.</p>
+          <p className="text-xs text-muted-foreground">
+            Designed & Engineered by{" "}
+            <span className="font-semibold text-foreground">Zarak K.</span>
+          </p>
         </div>
       </footer>
     </div>
