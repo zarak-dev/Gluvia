@@ -125,9 +125,9 @@ export function RecentReadings({
       )}
 
       {/* Recent Readings Card (Screenshot Match) */}
-      <div className="rounded-2xl border border-[#E8EEF2] bg-white p-5 sm:p-6 shadow-[0_2px_12px_rgba(23,50,77,0.02)]">
+      <div className="rounded-2xl border border-[#E8EEF2] dark:border-border bg-white dark:bg-card p-5 sm:p-6 shadow-[0_2px_12px_rgba(23,50,77,0.02)]">
         <div className="flex items-center justify-between pb-4">
-          <h2 className="text-base sm:text-lg font-bold text-[#17324D]">
+          <h2 className="text-base sm:text-lg font-bold text-[#17324D] dark:text-foreground">
             Recent Readings
           </h2>
           <Link
@@ -141,20 +141,20 @@ export function RecentReadings({
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-[#E8EEF2]/80 hover:bg-transparent">
-                <TableHead className="text-xs font-medium text-[#718096] h-9">
+              <TableRow className="border-b border-[#E8EEF2]/80 dark:border-border hover:bg-transparent">
+                <TableHead className="text-xs font-medium text-[#718096] dark:text-muted-foreground h-9">
                   Date & Time
                 </TableHead>
-                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                <TableHead className="text-xs font-medium text-[#718096] dark:text-muted-foreground h-9">
                   Sugar Level
                 </TableHead>
-                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                <TableHead className="text-xs font-medium text-[#718096] dark:text-muted-foreground h-9">
                   Meal Tag
                 </TableHead>
-                <TableHead className="text-xs font-medium text-[#718096] h-9">
+                <TableHead className="text-xs font-medium text-[#718096] dark:text-muted-foreground h-9">
                   Food
                 </TableHead>
-                <TableHead className="text-xs font-medium text-[#718096] h-9 text-right">
+                <TableHead className="text-xs font-medium text-[#718096] dark:text-muted-foreground h-9 text-right">
                   Action
                 </TableHead>
               </TableRow>
@@ -173,13 +173,13 @@ export function RecentReadings({
                 return (
                   <TableRow
                     key={reading.id}
-                    className="border-b border-[#E8EEF2]/60 hover:bg-[#F7FBFC]/60 transition-colors"
+                    className="border-b border-[#E8EEF2]/60 dark:border-border/60 hover:bg-[#F7FBFC]/60 dark:hover:bg-muted/30 transition-colors"
                   >
                     <TableCell className="py-3 text-xs">
-                      <div className="font-semibold text-[#17324D]">
+                      <div className="font-semibold text-[#17324D] dark:text-foreground">
                         {formattedDate}
                       </div>
-                      <div className="text-[11px] text-[#718096]">
+                      <div className="text-[11px] text-[#718096] dark:text-muted-foreground">
                         {timeString}
                       </div>
                     </TableCell>
@@ -195,7 +195,7 @@ export function RecentReadings({
                             level === "low" && "bg-[#F97316]"
                           )}
                         />
-                        <span className="text-xs font-semibold text-[#17324D]">
+                        <span className="text-xs font-semibold text-[#17324D] dark:text-foreground">
                           {reading.sugar_mg_dl} mg/dL
                         </span>
                       </div>
@@ -206,20 +206,20 @@ export function RecentReadings({
                         className={cn(
                           "inline-flex items-center rounded-full px-3 py-0.5 text-xs font-medium",
                           reading.meal_tag === "fasting" &&
-                            "bg-[#F3E8FF] text-[#7C3AED]",
+                            "bg-[#F3E8FF] dark:bg-purple-950/50 text-[#7C3AED] dark:text-purple-300",
                           reading.meal_tag === "before_meal" &&
-                            "bg-[#FFF4E5] text-[#D97706]",
+                            "bg-[#FFF4E5] dark:bg-amber-950/50 text-[#D97706] dark:text-amber-400",
                           reading.meal_tag === "after_meal" &&
-                            "bg-[#E8F3FF] text-[#2563EB]",
+                            "bg-[#E8F3FF] dark:bg-blue-950/50 text-[#2563EB] dark:text-blue-300",
                           reading.meal_tag === "bedtime" &&
-                            "bg-[#F1F5F9] text-[#475569]"
+                            "bg-[#F1F5F9] dark:bg-slate-800/60 text-[#475569] dark:text-slate-300"
                         )}
                       >
                         {MEAL_TAG_LABELS[reading.meal_tag]}
                       </span>
                     </TableCell>
 
-                    <TableCell className="py-3 text-xs text-[#5A6A80] max-w-[150px] truncate">
+                    <TableCell className="py-3 text-xs text-[#5A6A80] dark:text-muted-foreground max-w-[150px] truncate">
                       {reading.food_eaten || "—"}
                     </TableCell>
 
@@ -227,7 +227,7 @@ export function RecentReadings({
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-[#718096] hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                        className="h-7 w-7 text-[#718096] dark:text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
                         onClick={() => setReadingToDelete(reading)}
                         aria-label={`Delete reading from ${formattedDate}`}
                         title="Delete reading"

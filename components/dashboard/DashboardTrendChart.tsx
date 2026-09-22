@@ -46,8 +46,8 @@ function CustomTooltip({
   const level = getSugarLevel(data.sugar);
 
   return (
-    <div className="rounded-xl border border-[#E8EEF2] bg-white p-3 shadow-md text-xs space-y-1">
-      <div className="font-semibold text-sm flex items-center justify-between gap-3 text-[#17324D]">
+    <div className="rounded-xl border border-[#E8EEF2] dark:border-border bg-white dark:bg-card p-3 shadow-md text-xs space-y-1">
+      <div className="font-semibold text-sm flex items-center justify-between gap-3 text-[#17324D] dark:text-foreground">
         <span>{data.sugar} mg/dL</span>
         <span
           className={cn(
@@ -58,11 +58,11 @@ function CustomTooltip({
           {SUGAR_LEVEL_LABELS[level]}
         </span>
       </div>
-      <div className="text-[#718096]">
+      <div className="text-[#718096] dark:text-muted-foreground">
         <div>
           {data.fullDate} at {data.time}
         </div>
-        <div className="font-medium text-[#17324D] mt-0.5">
+        <div className="font-medium text-[#17324D] dark:text-foreground mt-0.5">
           {data.mealTag}
         </div>
       </div>
@@ -128,10 +128,10 @@ export function DashboardTrendChart({
   }, [readings]);
 
   return (
-    <div className="rounded-2xl border border-[#E8EEF2] bg-white p-5 sm:p-6 shadow-[0_2px_12px_rgba(23,50,77,0.02)] flex flex-col justify-between">
+    <div className="rounded-2xl border border-[#E8EEF2] dark:border-border bg-white dark:bg-card p-5 sm:p-6 shadow-[0_2px_12px_rgba(23,50,77,0.02)] flex flex-col justify-between">
       {/* Header */}
       <div className="flex items-center justify-between pb-3">
-        <h2 className="text-base sm:text-lg font-bold text-[#17324D]">
+        <h2 className="text-base sm:text-lg font-bold text-[#17324D] dark:text-foreground">
           Sugar Trend (Last 7 Days)
         </h2>
         <Link
@@ -149,9 +149,9 @@ export function DashboardTrendChart({
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#20B486] border-t-transparent" />
           </div>
         ) : chartData.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-[#E8EEF2] p-6 text-center text-[#718096]">
+          <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-[#E8EEF2] dark:border-border p-6 text-center text-[#718096] dark:text-muted-foreground">
             <p className="text-xs font-medium">No readings for the past 7 days</p>
-            <p className="text-[11px] mt-1 text-[#8898AA]">
+            <p className="text-[11px] mt-1 text-[#8898AA] dark:text-muted-foreground/70">
               Log readings to view your glycemic curve
             </p>
           </div>
@@ -172,13 +172,14 @@ export function DashboardTrendChart({
                 strokeDasharray="3 3"
                 vertical={false}
                 stroke="#F0F4F8"
+                className="stroke-[#F0F4F8] dark:stroke-border/40"
               />
 
               <XAxis
                 dataKey="displayDate"
                 tickLine={false}
                 axisLine={false}
-                className="text-[11px] font-medium fill-[#718096]"
+                className="text-[11px] font-medium fill-[#718096] dark:fill-muted-foreground"
                 dy={6}
               />
 
@@ -187,7 +188,7 @@ export function DashboardTrendChart({
                 ticks={[50, 100, 150, 200, 250]}
                 tickLine={false}
                 axisLine={false}
-                className="text-[11px] font-medium fill-[#718096]"
+                className="text-[11px] font-medium fill-[#718096] dark:fill-muted-foreground"
                 width={45}
               />
 
