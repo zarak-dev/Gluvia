@@ -59,7 +59,7 @@ export async function callGemini({
 
   if (!apiKey) {
     throw new Error(
-      "GEMINI_API_KEY is not configured. Set it in your environment variables."
+      "Aimmyy AI API key (GEMINI_API_KEY) is not configured. Set it in your environment variables."
     );
   }
 
@@ -86,7 +86,7 @@ export async function callGemini({
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Gemini API error:", response.status, errorText);
+    console.error("Aimmyy AI API error:", response.status, errorText);
     throw new Error(`AI service temporarily unavailable (${response.status})`);
   }
 
@@ -94,7 +94,7 @@ export async function callGemini({
 
   if (!isGeminiApiResponse(data)) {
     throw new Error(
-      "Gemini API returned an unexpected response shape. Expected choices[0].message.content."
+      "Aimmyy AI returned an unexpected response shape. Expected choices[0].message.content."
     );
   }
 
