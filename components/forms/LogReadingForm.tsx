@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants";
 import { getSugarBadgeClass, getSugarLevel, cn } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
+import { GlycemicActionModal } from "@/components/alerts/GlycemicActionModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,6 +87,8 @@ export function LogReadingForm({
   const addReading = useAppStore((state) => state.addReading);
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [actionModalReading, setActionModalReading] = useState<SugarReading | null>(null);
+  const [isActionModalOpen, setIsActionModalOpen] = useState<boolean>(false);
 
   const {
     register,
@@ -156,9 +159,6 @@ export function LogReadingForm({
       const inserted = data as SugarReading;
       addReading(inserted);
       setIsSuccess(true);
-      toast.success(
-        `Reading logged: ${inserted.sugar_mg_dl} mg/dL (${MEAL_TAG_LABELS[inserted.meal_tag]})`
-      );
 
       reset({
         reading_date: getNowDatetimeLocal(),
@@ -168,10 +168,19 @@ export function LogReadingForm({
         notes: "",
       });
 
-      if (onSuccess) {
-        onSuccess(inserted);
+      // If reading is out of safe range (< 70 or > 180), open clinical guidance modal immediately
+      if (inserted.sugar_mg_dl < 70 || inserted.sugar_mg_dl > 180) {
+        setActionModalReading(inserted);
+        setIsActionModalOpen(true);
       } else {
-        router.refresh();
+        toast.success(
+          `Reading logged: ${inserted.sugar_mg_dl} mg/dL (${MEAL_TAG_LABELS[inserted.meal_tag]})`
+        );
+        if (onSuccess) {
+          onSuccess(inserted);
+        } else {
+          router.refresh();
+        }
       }
     } catch (err: unknown) {
       const msg =
@@ -373,6 +382,22 @@ export function LogReadingForm({
           )}
         </Button>
       </div>
+
+      {/* Immediate Clinical Action & Warning Modal */}
+      <GlycemicActionModal
+        reading={actionModalReading}
+        isOpen={isActionModalOpen}
+        onClose={() => {
+          setIsActionModalOpen(false);
+          if (actionModalReading) {
+            if (onSuccess) {
+              onSuccess(actionModalReading);
+            } else {
+              router.refresh();
+            }
+          }
+        }}
+      />
     </form>
   );
 }

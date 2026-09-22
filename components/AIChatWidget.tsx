@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { GlycemicActionModal } from "@/components/alerts/GlycemicActionModal";
 import type { ChatMessage, SugarReading } from "@/types";
 
 interface SpeechRecognitionResultItem {
@@ -66,6 +67,8 @@ export function AIChatWidget(): React.ReactElement {
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
   const [lastFailedText, setLastFailedText] = useState<string | null>(null);
   const [isListening, setIsListening] = useState<boolean>(false);
+  const [actionModalReading, setActionModalReading] = useState<SugarReading | null>(null);
+  const [isActionModalOpen, setIsActionModalOpen] = useState<boolean>(false);
 
   const chatMessages = useAppStore((state) => state.chatMessages);
   const addMessage = useAppStore((state) => state.addMessage);
@@ -271,9 +274,16 @@ export function AIChatWidget(): React.ReactElement {
         const tagDisplay = resObj.newReading.meal_tag
           ? resObj.newReading.meal_tag.replace("_", " ")
           : "reading";
-        toast.success(
-          `Logged ${resObj.newReading.sugar_mg_dl} mg/dL (${tagDisplay}) automatically!`
-        );
+
+        // Trigger immediate clinical action modal if out of range (< 70 or > 180)
+        if (resObj.newReading.sugar_mg_dl < 70 || resObj.newReading.sugar_mg_dl > 180) {
+          setActionModalReading(resObj.newReading);
+          setIsActionModalOpen(true);
+        } else {
+          toast.success(
+            `Logged ${resObj.newReading.sugar_mg_dl} mg/dL (${tagDisplay}) automatically!`
+          );
+        }
         router.refresh();
       }
     } catch (err: unknown) {
@@ -526,6 +536,13 @@ export function AIChatWidget(): React.ReactElement {
           </form>
         </Card>
       )}
+
+      {/* Immediate Clinical Action & Warning Modal */}
+      <GlycemicActionModal
+        reading={actionModalReading}
+        isOpen={isActionModalOpen}
+        onClose={() => setIsActionModalOpen(false)}
+      />
     </div>
   );
 }
