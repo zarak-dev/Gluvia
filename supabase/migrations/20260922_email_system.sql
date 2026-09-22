@@ -51,20 +51,19 @@ CREATE POLICY "weekly_report_logs_select_own" ON public.weekly_report_logs
 -- CREATE EXTENSION IF NOT EXISTS pg_net;
 
 -- Cron Schedule: Every Monday at 08:00 AM UTC
--- Replace <PROJECT_REF> and <CRON_SECRET> with your actual project values:
-/*
+-- Enabled for project cijuondnjczogkazayeb
 SELECT cron.schedule(
   'weekly-health-report-job',
   '0 8 * * 1',
   $$
   SELECT net.http_post(
-    url := 'https://<PROJECT_REF>.supabase.co/functions/v1/weekly-health-report',
+    url := 'https://cijuondnjczogkazayeb.supabase.co/functions/v1/weekly-health-report',
     headers := jsonb_build_object(
       'Content-Type', 'application/json',
-      'Authorization', 'Bearer <CRON_SECRET>'
+      'Authorization', 'Bearer gluvia-cron-secure-report-key-2026'
     ),
     body := '{}'::jsonb
   );
   $$
 );
-*/
+
