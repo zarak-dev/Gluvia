@@ -166,8 +166,8 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
             <Menu className="h-5 w-5" />
           </Button>
 
-          {/* Dynamic Breadcrumbs */}
-          <nav aria-label="Breadcrumbs" className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
+          {/* Dynamic Breadcrumbs - Displayed on desktop (md+), hidden on mobile to keep top bar clean and spacious */}
+          <nav aria-label="Breadcrumbs" className="hidden md:flex items-center gap-1.5 text-xs sm:text-sm font-medium">
             <Link
               href="/dashboard"
               className="flex items-center gap-1.5 text-[#718096] dark:text-muted-foreground hover:text-[#17324D] dark:hover:text-foreground transition-colors"
@@ -179,7 +179,7 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
             {pathname !== "/dashboard" && (
               <>
                 <ChevronRight className="h-3.5 w-3.5 text-[#A0AEC0] dark:text-muted-foreground/50 shrink-0" />
-                <span className="font-semibold text-[#17324D] dark:text-foreground truncate max-w-[140px] sm:max-w-none">
+                <span className="font-semibold text-[#17324D] dark:text-foreground truncate max-w-[200px] lg:max-w-none">
                   {currentRouteTitle}
                 </span>
               </>
