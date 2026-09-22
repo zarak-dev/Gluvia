@@ -90,7 +90,7 @@ export default function HomePage(): React.ReactElement {
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="relative isolate overflow-hidden border-b py-16 text-center sm:py-24 sm:px-8 lg:py-28">
+        <section className="relative isolate overflow-hidden border-b py-20 text-center sm:py-28 lg:py-32">
           {/* Background Medical Visual with subtle soft gradient overlay */}
           <div className="absolute inset-0 z-0 pointer-events-none">
             <Image
@@ -102,7 +102,7 @@ export default function HomePage(): React.ReactElement {
               className="object-cover object-center opacity-90 dark:opacity-30"
               quality={95}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/25 via-background/40 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/35 to-background" />
           </div>
 
           <div className="container relative z-10 px-4">
