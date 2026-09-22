@@ -8,7 +8,7 @@ import { SugarTrendChart } from "@/components/charts/SugarTrendChart";
 import type { SugarReading } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Trends — Gluvia",
+  title: "Trends - Gluvia",
   description:
     "View glycemic trends, in-range ratios, and glucose trajectory over 7, 30, and 90 days.",
 };

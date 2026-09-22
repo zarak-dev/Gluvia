@@ -13,7 +13,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const metadata: Metadata = {
-  title: "Log Reading — Gluvia",
+  title: "Log Reading - Gluvia",
   description:
     "Record a new blood glucose reading with meal tags and diet notes.",
 };

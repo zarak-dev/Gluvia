@@ -6,7 +6,7 @@ import { Activity, ShieldCheck, Sparkles } from "lucide-react";
 import { LoginForm } from "@/components/forms/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Login — Gluvia",
+  title: "Login - Gluvia",
   description:
     "Sign in to your Gluvia account to manage your glucose and diabetes health.",
 };

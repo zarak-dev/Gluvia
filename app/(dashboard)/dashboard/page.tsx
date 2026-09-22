@@ -13,7 +13,7 @@ import { QuickAddDialog } from "@/components/dashboard/QuickAddDialog";
 import type { SugarReading, UserProfile } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Gluvia",
+  title: "Dashboard - Gluvia",
   description:
     "Monitor daily glucose readings, 7-day glycemic average, and trends.",
 };

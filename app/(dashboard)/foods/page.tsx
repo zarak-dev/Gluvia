@@ -5,7 +5,7 @@ import { FoodSuggester } from "@/components/FoodSuggester";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const metadata: Metadata = {
-  title: "Food Suggestions — Gluvia",
+  title: "Food Suggestions - Gluvia",
   description:
     "Glycemic-friendly South Asian food combinations, macro breakdowns, and fiber balancing.",
 };

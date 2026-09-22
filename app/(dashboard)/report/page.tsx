@@ -7,7 +7,7 @@ import { ReportView } from "@/components/report/ReportView";
 import type { SugarReading, UserProfile } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Doctor Report — Gluvia",
+  title: "Doctor Report - Gluvia",
   description:
     "Generate clinical glycemic summaries and export PDF reports for physician consultations.",
 };

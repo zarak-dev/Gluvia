@@ -6,7 +6,7 @@ import { Activity, ShieldCheck, Sparkles } from "lucide-react";
 import { RegisterForm } from "@/components/forms/RegisterForm";
 
 export const metadata: Metadata = {
-  title: "Register — Gluvia",
+  title: "Register - Gluvia",
   description:
     "Create your Gluvia account to start tracking diabetes and glucose metrics.",
 };
