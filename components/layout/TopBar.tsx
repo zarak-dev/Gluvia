@@ -93,13 +93,10 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
   const unreadCount = notifications.filter((n) => n.unread).length;
   const currentRouteTitle = ROUTE_LABELS[pathname] ?? "Dashboard";
 
-  // Initialize theme from localStorage or system preference
+  // Initialize theme: Strictly default to light mode unless explicitly saved as 'dark'
   useEffect(() => {
     const savedTheme = localStorage.getItem("gluvia-theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    const shouldBeDark = savedTheme ? savedTheme === "dark" : prefersDark;
+    const shouldBeDark = savedTheme === "dark";
     if (shouldBeDark) {
       document.documentElement.classList.add("dark");
       setIsDark(true);
@@ -107,6 +104,20 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
       document.documentElement.classList.remove("dark");
       setIsDark(false);
     }
+
+    const handleThemeChange = (e: Event) => {
+      const customEvent = e as CustomEvent<boolean>;
+      if (typeof customEvent.detail === "boolean") {
+        setIsDark(customEvent.detail);
+      } else {
+        setIsDark(document.documentElement.classList.contains("dark"));
+      }
+    };
+
+    window.addEventListener("gluvia-theme-change", handleThemeChange);
+    return () => {
+      window.removeEventListener("gluvia-theme-change", handleThemeChange);
+    };
   }, []);
 
   // Close notifications dropdown on click outside
@@ -139,6 +150,9 @@ export function TopBar({ user }: TopBarProps): React.ReactElement {
       localStorage.setItem("gluvia-theme", "light");
       toast.success("Day mode enabled");
     }
+    window.dispatchEvent(
+      new CustomEvent("gluvia-theme-change", { detail: nextTheme })
+    );
   };
 
   const markAllAsRead = (): void => {

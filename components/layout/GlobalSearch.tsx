@@ -217,6 +217,9 @@ export function GlobalSearch(): React.ReactElement {
     const toggleTheme = () => {
       const isDark = document.documentElement.classList.toggle("dark");
       localStorage.setItem("gluvia-theme", isDark ? "dark" : "light");
+      window.dispatchEvent(
+        new CustomEvent("gluvia-theme-change", { detail: isDark })
+      );
       setIsOpen(false);
       setQuery("");
     };
