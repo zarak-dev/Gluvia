@@ -5,6 +5,7 @@ import {
   renderWeeklyReportEmail,
   type WeeklyReportStats,
 } from "../_shared/email-templates.ts";
+import { GLUVIA_LOGO_BASE64 } from "../_shared/logo-base64.ts";
 
 interface ProfileRecord {
   id: string;
@@ -36,6 +37,24 @@ serve(async (req: Request) => {
       status: 405,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  // Parse optional JSON request body (for force send or targeted user testing)
+  let forceSend = false;
+  let targetEmail: string | null = null;
+  try {
+    const bodyText = await req.text();
+    if (bodyText) {
+      const bodyJson = JSON.parse(bodyText);
+      if (bodyJson.force === true || bodyJson.force_send === true) {
+        forceSend = true;
+      }
+      if (bodyJson.target_email) {
+        targetEmail = String(bodyJson.target_email).trim().toLowerCase();
+      }
+    }
+  } catch {
+    // Optional payload
   }
 
   try {
@@ -151,7 +170,12 @@ serve(async (req: Request) => {
         continue;
       }
 
-      // 7. Strict Idempotency Check: Prevent duplicate reports for the same period
+      // If targeted to a specific email, skip all others
+      if (targetEmail && recipientEmail.toLowerCase() !== targetEmail) {
+        continue;
+      }
+
+      // 7. Strict Idempotency Check: Prevent duplicate reports for the same period (unless forceSend is true)
       const { data: existingLog } = await supabase
         .from("weekly_report_logs")
         .select("id, status")
@@ -161,7 +185,7 @@ serve(async (req: Request) => {
         .eq("status", "sent")
         .maybeSingle();
 
-      if (existingLog) {
+      if (existingLog && !forceSend) {
         console.log(`Skipping user ${profile.id}: Weekly report already delivered for this period.`);
         skippedCount++;
         continue;
@@ -253,6 +277,13 @@ serve(async (req: Request) => {
             to: [recipientEmail],
             subject: "Your Gluvia weekly health report",
             html: emailHtml,
+            attachments: [
+              {
+                filename: "logo.png",
+                content: GLUVIA_LOGO_BASE64,
+                content_id: "gluvia-logo",
+              },
+            ],
           }),
         });
 

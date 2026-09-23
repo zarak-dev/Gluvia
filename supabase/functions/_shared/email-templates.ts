@@ -78,7 +78,7 @@ export function renderPasswordResetEmail(options: PasswordResetEmailOptions): st
                 <tr>
                   <td align="center">
                     <a href="${portalUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
-                      <img src="${portalUrl}/images/logo.png" width="48" height="48" alt="Gluvia Logo" style="display: block; width: 48px; height: 48px; border-radius: 12px; border: 0; outline: none; margin: 0 auto; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);" />
+                      <img src="cid:gluvia-logo" width="48" height="48" alt="Gluvia Logo" style="display: block; width: 48px; height: 48px; border-radius: 12px; border: 0; outline: none; margin: 0 auto; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);" />
                     </a>
                   </td>
                 </tr>
@@ -204,7 +204,7 @@ export function renderWeeklyReportEmail(options: WeeklyReportEmailOptions): stri
                 <tr>
                   <td align="center">
                     <a href="${portalUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
-                      <img src="${portalUrl}/images/logo.png" width="48" height="48" alt="Gluvia Logo" style="display: block; width: 48px; height: 48px; border-radius: 12px; border: 0; outline: none; margin: 0 auto; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);" />
+                      <img src="cid:gluvia-logo" width="48" height="48" alt="Gluvia Logo" style="display: block; width: 48px; height: 48px; border-radius: 12px; border: 0; outline: none; margin: 0 auto; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);" />
                     </a>
                   </td>
                 </tr>

@@ -2,6 +2,7 @@
 // Follow Deno and Supabase Edge Function standards
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { renderPasswordResetEmail } from "../_shared/email-templates.ts";
+import { GLUVIA_LOGO_BASE64 } from "../_shared/logo-base64.ts";
 
 interface SupabaseAuthHookPayload {
   user: {
@@ -152,6 +153,13 @@ serve(async (req: Request) => {
         to: [user.email],
         subject: "Reset your Gluvia password",
         html: emailHtml,
+        attachments: [
+          {
+            filename: "logo.png",
+            content: GLUVIA_LOGO_BASE64,
+            content_id: "gluvia-logo",
+          },
+        ],
       }),
     });
 
