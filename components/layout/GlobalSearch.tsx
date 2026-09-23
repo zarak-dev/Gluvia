@@ -24,6 +24,7 @@ import { useAppStore } from "@/store/useAppStore";
 import { useSugarReadings } from "@/hooks/useSugarReadings";
 import { getSugarLevel } from "@/lib/utils";
 import { MEAL_TAG_LABELS } from "@/lib/constants";
+import { navigationProgress } from "@/lib/navigationProgress";
 import type { SugarReading } from "@/types";
 
 interface SearchCategoryItem {
@@ -396,6 +397,7 @@ export function GlobalSearch(): React.ReactElement {
       if (item.action) {
         item.action();
       } else if (item.href) {
+        navigationProgress.start(item.href);
         router.push(item.href);
       }
       setIsOpen(false);

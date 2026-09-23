@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
+import { NavigationProgressBar } from "@/components/layout/NavigationProgressBar";
 import "./globals.css";
 
 const inter = Inter({
@@ -35,6 +37,9 @@ export default function RootLayout({
           inter.className
         )}
       >
+        <Suspense fallback={null}>
+          <NavigationProgressBar />
+        </Suspense>
         {children}
         <Toaster />
       </body>
