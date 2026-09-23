@@ -38,3 +38,8 @@ next-env.d.ts
 # Vercel
 .vercel
 node_modules
+
+# Supabase
+.temp/
+supabase/.temp/
+

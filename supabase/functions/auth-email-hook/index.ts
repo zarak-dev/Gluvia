@@ -1,3 +1,4 @@
+/// <reference path="../deno.d.ts" />
 // Follow Deno and Supabase Edge Function standards
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { renderPasswordResetEmail } from "../_shared/email-templates.ts";
