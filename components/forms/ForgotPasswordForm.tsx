@@ -65,15 +65,20 @@ export function ForgotPasswordForm(): React.ReactElement {
       });
 
       if (error) {
-        // Only show rate limit or generic network errors; never disclose account existence
         if (error.status === 429) {
           setServerError("Too many requests. Please wait a moment before trying again.");
           return;
         }
-        console.error("Password reset error:", error.message);
+        // If a server or hook error occurred (5xx), inform the user rather than showing false success
+        if (error.status && error.status >= 500) {
+          console.error("Password reset server error:", error.message);
+          setServerError("The email delivery service encountered an issue. Please try again shortly.");
+          return;
+        }
+        console.error("Password reset notice:", error.message);
       }
 
-      // Always show generic success state to prevent account enumeration
+      // Show success state to user
       setIsSubmitted(true);
       setSubmittedEmail(email);
       setCooldown(RESEND_COOLDOWN_SECONDS);

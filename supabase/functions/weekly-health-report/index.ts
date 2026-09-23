@@ -68,9 +68,21 @@ serve(async (req: Request) => {
       );
     }
 
-    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "no-reply@gluvia.app";
-    const fromName = Deno.env.get("RESEND_FROM_NAME") || "Gluvia";
-    const appUrl = Deno.env.get("APP_URL") || "https://gluvia.app";
+    const rawFromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "noreply@gluvia.world";
+    const rawFromName = Deno.env.get("RESEND_FROM_NAME") || "Gluvia";
+    const appUrl = Deno.env.get("APP_URL") || "https://gluvia.world";
+
+    let fromAddress = "";
+    const angleBracketMatch = rawFromEmail.match(/^(.*?)\s*<([^>]+)>\s*$/);
+    if (angleBracketMatch) {
+      const parsedName = angleBracketMatch[1].trim() || rawFromName;
+      const parsedEmail = angleBracketMatch[2].trim();
+      fromAddress = `${parsedName} <${parsedEmail}>`;
+    } else if (rawFromEmail.includes("@")) {
+      fromAddress = `${rawFromName} <${rawFromEmail.trim()}>`;
+    } else {
+      fromAddress = `${rawFromName} <noreply@gluvia.world>`;
+    }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
@@ -237,7 +249,7 @@ serve(async (req: Request) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: `${fromName} <${fromEmail}>`,
+            from: fromAddress,
             to: [recipientEmail],
             subject: "Your Gluvia weekly health report",
             html: emailHtml,

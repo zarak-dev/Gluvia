@@ -68,10 +68,23 @@ serve(async (req: Request) => {
       });
     }
 
-    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "no-reply@gluvia.app";
-    const fromName = Deno.env.get("RESEND_FROM_NAME") || "Gluvia";
-    const appUrl = Deno.env.get("APP_URL") || "https://gluvia.app";
+    const rawFromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "noreply@gluvia.world";
+    const rawFromName = Deno.env.get("RESEND_FROM_NAME") || "Gluvia";
+    const appUrl = Deno.env.get("APP_URL") || "https://gluvia.world";
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+
+    // Cleanly normalize the "from" address to prevent nested "Name <Name <email>>" format
+    let fromAddress = "";
+    const angleBracketMatch = rawFromEmail.match(/^(.*?)\s*<([^>]+)>\s*$/);
+    if (angleBracketMatch) {
+      const parsedName = angleBracketMatch[1].trim() || rawFromName;
+      const parsedEmail = angleBracketMatch[2].trim();
+      fromAddress = `${parsedName} <${parsedEmail}>`;
+    } else if (rawFromEmail.includes("@")) {
+      fromAddress = `${rawFromName} <${rawFromEmail.trim()}>`;
+    } else {
+      fromAddress = `${rawFromName} <noreply@gluvia.world>`;
+    }
 
     // Build the secure Supabase recovery verification URL
     let resetUrl = "";
@@ -101,7 +114,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${fromName} <${fromEmail}>`,
+        from: fromAddress,
         to: [user.email],
         subject: "Reset your Gluvia password",
         html: emailHtml,
@@ -116,7 +129,10 @@ serve(async (req: Request) => {
         errText
       );
       return new Response(
-        JSON.stringify({ error: "Failed to dispatch email via Resend" }),
+        JSON.stringify({
+          error: "Failed to dispatch email via Resend",
+          details: errText,
+        }),
         { status: 502, headers: { "Content-Type": "application/json" } }
       );
     }
