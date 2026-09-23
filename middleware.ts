@@ -8,6 +8,7 @@ const PROTECTED_ROUTES = [
   "/diet",
   "/foods",
   "/report",
+  "/profile",
   "/api/ai",
 ];
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2, Mail, CheckCircle2, ArrowLeft, AlertCircle } from "lucide-react";
+import { Loader2, Mail, ArrowLeft, AlertCircle } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 import { getURL } from "@/lib/utils";

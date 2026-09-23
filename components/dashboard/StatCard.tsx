@@ -1,9 +1,9 @@
 import * as React from "react";
 import { TrendingUp, TrendingDown, Minus, type LucideIcon } from "lucide-react";
 
-import { cn, getSugarColorClass, getSugarBadgeClass } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { SUGAR_LEVEL_LABELS } from "@/lib/constants";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import type { SugarLevel, TrendDirection } from "@/types";
 
 export interface StatCardProps {

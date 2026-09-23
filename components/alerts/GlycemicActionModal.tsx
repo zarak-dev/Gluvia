@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   AlertTriangle,
   Droplets,
@@ -9,18 +8,15 @@ import {
   Clock,
   PhoneCall,
   Sparkles,
-  CheckCircle2,
   AlertOctagon,
   HeartPulse,
   Candy,
-  ChevronRight,
 } from "lucide-react";
 
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";

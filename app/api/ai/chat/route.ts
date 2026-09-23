@@ -386,11 +386,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           console.error("Supabase insert error for AI logged reading:", insertError);
         } else if (inserted) {
           newReading = inserted as SugarReading;
-          console.log(
-            "Successfully logged reading via AI:",
-            newReading.sugar_mg_dl,
-            newReading.meal_tag
-          );
         }
       } catch (insertErr) {
         console.error("Exception inserting reading from AI:", insertErr);

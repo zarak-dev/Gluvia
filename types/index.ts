@@ -70,20 +70,3 @@ export interface ChatMessage {
   timestamp: string;
 }
 
-export interface DashboardStats {
-  latestReading: number | null;
-  averageReading: number | null;
-  totalReadings: number;
-  trend: TrendDirection;
-}
-
-export interface AIResponse {
-  content: string;
-  model: string;
-}
-
-export interface ApiError {
-  message: string;
-  code: string;
-  status: number;
-}

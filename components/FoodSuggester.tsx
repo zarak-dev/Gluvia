@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Apple, Filter, Loader2, Sparkles, Info } from "lucide-react";
+import { Apple, Filter, Sparkles, Info } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 import {

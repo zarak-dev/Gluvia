@@ -7,8 +7,8 @@ import { Trash2, Plus, Calendar, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
-import { MEAL_TAG_LABELS, SUGAR_LEVEL_LABELS } from "@/lib/constants";
-import { cn, formatDate, getSugarLevel, getSugarBadgeClass } from "@/lib/utils";
+import { MEAL_TAG_LABELS } from "@/lib/constants";
+import { cn, formatDate, getSugarLevel } from "@/lib/utils";
 import { useAppStore } from "@/store/useAppStore";
 import { Button } from "@/components/ui/button";
 import {
