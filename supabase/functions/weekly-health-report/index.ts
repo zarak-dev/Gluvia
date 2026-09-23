@@ -249,7 +249,7 @@ serve(async (req: Request) => {
           throw new Error(`Resend provider error (${resendRes.status}): ${errText}`);
         }
 
-        const resendData = await resendRes.json();
+        const resendData = (await resendRes.json()) as { id?: string };
         const providerMessageId = resendData.id || null;
 
         // 12. Record Successful Delivery in weekly_report_logs

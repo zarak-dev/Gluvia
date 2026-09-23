@@ -44,7 +44,7 @@ serve(async (req: Request) => {
       }
     }
 
-    const payload: SupabaseAuthHookPayload = await req.json();
+    const payload = (await req.json()) as SupabaseAuthHookPayload;
     const { user, email_data } = payload;
 
     // IMPORTANT: Gluvia intentionally disables email verification on signup.
@@ -121,9 +121,9 @@ serve(async (req: Request) => {
       );
     }
 
-    const resendData = await resendResponse.json();
+    const resendData = (await resendResponse.json()) as { id?: string };
     console.log(
-      `Password reset email dispatched successfully via Resend. Message ID: ${resendData.id}`
+      `Password reset email dispatched successfully via Resend. Message ID: ${resendData.id || "unknown"}`
     );
 
     // Return 200 OK to Supabase Auth Hook
