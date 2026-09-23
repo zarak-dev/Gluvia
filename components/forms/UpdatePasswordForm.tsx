@@ -90,9 +90,25 @@ export function UpdatePasswordForm(): React.ReactElement {
       }
     });
 
-    // 4. Check for active recovery session
+    // 4. Check for active recovery session or client token_hash
     const verifySession = async () => {
       try {
+        const tokenHash = searchParams.get("token_hash");
+        const type = (searchParams.get("type") as "recovery" | null) ?? "recovery";
+
+        // Direct token_hash fallback if redirected directly to page
+        if (tokenHash) {
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type,
+          });
+          if (!error && data.session) {
+            setIsTokenInvalid(false);
+            setIsCheckingSession(false);
+            return;
+          }
+        }
+
         const {
           data: { session },
         } = await supabase.auth.getSession();

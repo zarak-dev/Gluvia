@@ -160,12 +160,18 @@ export function parseAISections<T = unknown>(
  * Works in development (localhost) and production (custom domain or Vercel).
  */
 export function getURL(): string {
+  // If executed in browser, always use current origin so local dev (localhost:3000) and production work seamlessly
+  if (typeof window !== "undefined" && window.location?.origin) {
+    let origin = window.location.origin;
+    return origin.endsWith("/") ? origin : `${origin}/`;
+  }
+
   let url =
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.NEXT_PUBLIC_VERCEL_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
+    "http://localhost:3000";
 
   url = url.includes("http") ? url : `https://${url}`;
-  url = url.charAt(url.length - 1) === "/" ? url : `${url}/`;
+  url = url.endsWith("/") ? url : `${url}/`;
   return url;
 }

@@ -86,13 +86,22 @@ serve(async (req: Request) => {
       fromAddress = `${rawFromName} <noreply@gluvia.world>`;
     }
 
-    // Build the secure Supabase recovery verification URL
+    // Build the secure recovery verification URL
     let resetUrl = "";
-    if (email_data.token_hash && supabaseUrl) {
-      const redirectTo = email_data.redirect_to || `${appUrl}/auth/callback?next=/update-password`;
-      resetUrl = `${supabaseUrl}/auth/v1/verify?token=${email_data.token_hash}&type=recovery&redirect_to=${encodeURIComponent(
-        redirectTo
-      )}`;
+    if (email_data.token_hash) {
+      const targetBase =
+        email_data.redirect_to || `${appUrl}/auth/callback?next=/update-password`;
+      try {
+        const parsed = new URL(targetBase);
+        parsed.searchParams.set("token_hash", email_data.token_hash);
+        parsed.searchParams.set("type", "recovery");
+        if (!parsed.searchParams.has("next")) {
+          parsed.searchParams.set("next", "/update-password");
+        }
+        resetUrl = parsed.toString();
+      } catch {
+        resetUrl = `${appUrl}/auth/callback?token_hash=${email_data.token_hash}&type=recovery&next=/update-password`;
+      }
     } else if (email_data.redirect_to) {
       resetUrl = email_data.redirect_to;
     } else {
