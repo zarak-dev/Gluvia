@@ -103,7 +103,16 @@ export function UpdatePasswordForm(): React.ReactElement {
             type,
           });
           if (!error && data.session) {
+            if (typeof window !== "undefined") {
+              window.history.replaceState({}, "", window.location.pathname);
+            }
             setIsTokenInvalid(false);
+            setIsCheckingSession(false);
+            return;
+          }
+          if (error) {
+            console.error("verifyOtp error:", error.message);
+            setIsTokenInvalid(true);
             setIsCheckingSession(false);
             return;
           }
@@ -115,23 +124,36 @@ export function UpdatePasswordForm(): React.ReactElement {
 
         if (session) {
           setIsTokenInvalid(false);
-        } else {
-          // If no session found yet, wait slightly in case hash token is being parsed by client SDK
+          setIsCheckingSession(false);
+          return;
+        }
+
+        // If hash fragment contains access_token, give Supabase client time to process it
+        if (
+          typeof window !== "undefined" &&
+          (window.location.hash.includes("access_token") ||
+            window.location.hash.includes("type=recovery"))
+        ) {
           setTimeout(async () => {
             const {
               data: { session: retrySession },
             } = await supabase.auth.getSession();
-            if (!retrySession) {
+            if (retrySession) {
+              setIsTokenInvalid(false);
+            } else {
               setIsTokenInvalid(true);
             }
             setIsCheckingSession(false);
-          }, 600);
+          }, 800);
           return;
         }
+
+        // No session and no recovery tokens present
+        setIsTokenInvalid(true);
+        setIsCheckingSession(false);
       } catch (err) {
         console.error("Session verification error:", err);
         setIsTokenInvalid(true);
-      } finally {
         setIsCheckingSession(false);
       }
     };

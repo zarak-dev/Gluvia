@@ -22,6 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AuthHashRedirect } from "@/components/auth/AuthHashRedirect";
 
 export const metadata: Metadata = {
   title: "Gluvia",
@@ -63,6 +64,7 @@ const FEATURES = [
 export default function HomePage(): React.ReactElement {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <AuthHashRedirect />
       {/* Top Navigation */}
       <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between px-4 sm:px-8">

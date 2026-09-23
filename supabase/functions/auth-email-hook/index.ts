@@ -70,7 +70,7 @@ serve(async (req: Request) => {
 
     const rawFromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "noreply@gluvia.world";
     const rawFromName = Deno.env.get("RESEND_FROM_NAME") || "Gluvia";
-    const appUrl = Deno.env.get("APP_URL") || "https://gluvia.world";
+    const appUrl = Deno.env.get("APP_URL") || "https://www.gluvia.world";
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 
     // Cleanly normalize the "from" address to prevent nested "Name <Name <email>>" format
@@ -86,26 +86,51 @@ serve(async (req: Request) => {
       fromAddress = `${rawFromName} <noreply@gluvia.world>`;
     }
 
-    // Build the secure recovery verification URL
+    // Determine the web app origin
+    let origin = "https://www.gluvia.world";
+    if (email_data.redirect_to) {
+      try {
+        const parsedRedirect = new URL(email_data.redirect_to);
+        origin = parsedRedirect.origin;
+      } catch {
+        // use default origin
+      }
+    } else if (appUrl) {
+      try {
+        origin = new URL(appUrl).origin;
+      } catch {
+        // use default origin
+      }
+    }
+
+    // Always canonicalize gluvia.world to www.gluvia.world to avoid 308 redirect cookie/session drops
+    if (origin === "https://gluvia.world" || origin === "http://gluvia.world") {
+      origin = "https://www.gluvia.world";
+    }
+
+    // Build the secure recovery verification URL.
+    // Directing to /update-password?token_hash=...&type=recovery has major advantages:
+    // 1. Antivirus / email scanners (GET crawlers) will not consume single-use tokens on server route handlers.
+    // 2. Client-side UpdatePasswordForm verifies token_hash upon mount in the user's browser.
     let resetUrl = "";
     if (email_data.token_hash) {
-      const targetBase =
-        email_data.redirect_to || `${appUrl}/auth/callback?next=/update-password`;
+      const resetLink = new URL(`${origin}/update-password`);
+      resetLink.searchParams.set("token_hash", email_data.token_hash);
+      resetLink.searchParams.set("type", "recovery");
+      resetUrl = resetLink.toString();
+    } else if (email_data.redirect_to) {
+      // Ensure redirect_to is never bare root '/'
       try {
-        const parsed = new URL(targetBase);
-        parsed.searchParams.set("token_hash", email_data.token_hash);
-        parsed.searchParams.set("type", "recovery");
-        if (!parsed.searchParams.has("next")) {
-          parsed.searchParams.set("next", "/update-password");
+        const parsed = new URL(email_data.redirect_to);
+        if (parsed.pathname === "/" || parsed.pathname === "") {
+          parsed.pathname = "/update-password";
         }
         resetUrl = parsed.toString();
       } catch {
-        resetUrl = `${appUrl}/auth/callback?token_hash=${email_data.token_hash}&type=recovery&next=/update-password`;
+        resetUrl = `${origin}/update-password`;
       }
-    } else if (email_data.redirect_to) {
-      resetUrl = email_data.redirect_to;
     } else {
-      resetUrl = `${appUrl}/update-password`;
+      resetUrl = `${origin}/update-password`;
     }
 
     const username = user.user_metadata?.username || null;

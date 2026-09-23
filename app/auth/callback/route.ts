@@ -9,7 +9,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const type = (searchParams.get("type") as EmailOtpType | null) ?? "recovery";
   const next = searchParams.get("next") ?? "/update-password";
 
-  const response = NextResponse.redirect(`${origin}${next}`);
+  let targetOrigin = origin;
+  if (targetOrigin === "https://gluvia.world" || targetOrigin === "http://gluvia.world") {
+    targetOrigin = "https://www.gluvia.world";
+  }
+
+  const response = NextResponse.redirect(`${targetOrigin}${next}`);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,7 +64,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   // 3. If verification failed or error was passed from Supabase
   const errorDescription = searchParams.get("error_description");
-  const redirectTarget = new URL(`${origin}/update-password`);
+  const redirectTarget = new URL(`${targetOrigin}/update-password`);
   redirectTarget.searchParams.set("error", "invalid_token");
   if (errorDescription) {
     redirectTarget.searchParams.set("error_description", errorDescription);

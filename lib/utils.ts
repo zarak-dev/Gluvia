@@ -163,15 +163,22 @@ export function getURL(): string {
   // If executed in browser, always use current origin so local dev (localhost:3000) and production work seamlessly
   if (typeof window !== "undefined" && window.location?.origin) {
     let origin = window.location.origin;
+    if (origin === "https://gluvia.world" || origin === "http://gluvia.world") {
+      origin = "https://www.gluvia.world";
+    }
     return origin.endsWith("/") ? origin : `${origin}/`;
   }
 
   let url =
     process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
     process.env.NEXT_PUBLIC_VERCEL_URL ??
     "http://localhost:3000";
 
   url = url.includes("http") ? url : `https://${url}`;
+  if (url === "https://gluvia.world" || url === "http://gluvia.world") {
+    url = "https://www.gluvia.world";
+  }
   url = url.endsWith("/") ? url : `${url}/`;
   return url;
 }

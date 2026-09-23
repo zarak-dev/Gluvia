@@ -46,7 +46,24 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+
+  // Recovery safety net: If request hits landing page with recovery token_hash, forward to /update-password
+  if (
+    pathname === "/" &&
+    (searchParams.has("token_hash") || searchParams.get("type") === "recovery")
+  ) {
+    const updatePasswordUrl = request.nextUrl.clone();
+    updatePasswordUrl.pathname = "/update-password";
+    return NextResponse.redirect(updatePasswordUrl);
+  }
+
+  // Auth code safety net: If request hits landing page with auth code, forward to /auth/callback
+  if (pathname === "/" && searchParams.has("code")) {
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = "/auth/callback";
+    return NextResponse.redirect(callbackUrl);
+  }
 
   // Protect sensitive pages and API routes
   const isProtected = PROTECTED_ROUTES.some(

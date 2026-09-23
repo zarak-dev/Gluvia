@@ -58,7 +58,7 @@ export function ForgotPasswordForm(): React.ReactElement {
 
     try {
       const supabase = createClient();
-      const redirectUrl = `${getURL()}auth/callback?next=/update-password`;
+      const redirectUrl = `${getURL()}update-password`;
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
