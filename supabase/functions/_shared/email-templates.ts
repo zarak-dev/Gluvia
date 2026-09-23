@@ -45,7 +45,10 @@ const BODY_BG = "#F7FBFC";
  */
 export function renderPasswordResetEmail(options: PasswordResetEmailOptions): string {
   const greeting = options.username ? `Salam, ${options.username}` : "Salam & Welcome";
-  const portalUrl = options.appUrl || "https://gluvia.app";
+  let portalUrl = options.appUrl || "https://www.gluvia.world";
+  if (portalUrl === "https://gluvia.world" || portalUrl === "http://gluvia.world") {
+    portalUrl = "https://www.gluvia.world";
+  }
 
   return `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -74,9 +77,9 @@ export function renderPasswordResetEmail(options: PasswordResetEmailOptions): st
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <div style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLOR} 0%, #3DD5A3 100%); width: 44px; height: 44px; border-radius: 12px; line-height: 44px; text-align: center; color: #ffffff; font-weight: bold; font-size: 22px; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);">
-                      ✚
-                    </div>
+                    <a href="${portalUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
+                      <img src="${portalUrl}/images/logo.png" width="48" height="48" alt="Gluvia Logo" style="display: block; width: 48px; height: 48px; border-radius: 12px; border: 0; outline: none; margin: 0 auto; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);" />
+                    </a>
                   </td>
                 </tr>
                 <tr>
@@ -143,7 +146,7 @@ export function renderPasswordResetEmail(options: PasswordResetEmailOptions): st
           <tr>
             <td align="center" style="padding-top: 24px;">
               <p style="margin: 0 0 6px; font-size: 11px; color: ${MUTED_COLOR};">
-                Gluvia · South Asian Diabetes & Glycemic Management Portal
+                A Project of Zarak K.
               </p>
               <p style="margin: 0; font-size: 11px; color: #A0AEC0;">
                 <a href="${portalUrl}" style="color: ${MUTED_COLOR}; text-decoration: underline;">Visit Dashboard</a>
@@ -165,7 +168,10 @@ export function renderPasswordResetEmail(options: PasswordResetEmailOptions): st
 export function renderWeeklyReportEmail(options: WeeklyReportEmailOptions): string {
   const greeting = options.username ? `Salam, ${options.username}` : "Salam";
   const { stats } = options;
-  const portalUrl = options.appUrl || "https://gluvia.app";
+  let portalUrl = options.appUrl || "https://www.gluvia.world";
+  if (portalUrl === "https://gluvia.world" || portalUrl === "http://gluvia.world") {
+    portalUrl = "https://www.gluvia.world";
+  }
 
   const hasData = stats.readingsCount > 0;
 
@@ -197,9 +203,9 @@ export function renderWeeklyReportEmail(options: WeeklyReportEmailOptions): stri
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <div style="display: inline-block; background: linear-gradient(135deg, ${BRAND_COLOR} 0%, #3DD5A3 100%); width: 44px; height: 44px; border-radius: 12px; line-height: 44px; text-align: center; color: #ffffff; font-weight: bold; font-size: 22px; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);">
-                      ✚
-                    </div>
+                    <a href="${portalUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
+                      <img src="${portalUrl}/images/logo.png" width="48" height="48" alt="Gluvia Logo" style="display: block; width: 48px; height: 48px; border-radius: 12px; border: 0; outline: none; margin: 0 auto; box-shadow: 0 4px 12px rgba(32, 180, 134, 0.25);" />
+                    </a>
                   </td>
                 </tr>
                 <tr>
@@ -377,7 +383,7 @@ export function renderWeeklyReportEmail(options: WeeklyReportEmailOptions): stri
           <tr>
             <td align="center" style="padding-top: 24px;">
               <p style="margin: 0 0 6px; font-size: 11px; color: ${MUTED_COLOR};">
-                Gluvia · South Asian Diabetes & Glycemic Management Portal
+                A Project of Zarak K.
               </p>
               <p style="margin: 0; font-size: 11px; color: #A0AEC0;">
                 <a href="${portalUrl}" style="color: ${MUTED_COLOR}; text-decoration: underline;">Visit Dashboard</a>
