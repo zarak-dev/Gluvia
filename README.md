@@ -166,8 +166,8 @@ Ensure you have the following installed on your machine:
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/your-username/gluvia.git
-cd gluvia
+git clone https://github.com/zarak-dev/Gluvia.git
+cd Gluvia
 ```
 
 ### 3. Install Dependencies
